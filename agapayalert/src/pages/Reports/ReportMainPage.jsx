@@ -155,10 +155,10 @@ const ReportMainPage = () => {
                       <p className="text-[#123F7B] text-xs font-extralight">Last seen: {formatDateTime(report.personInvolved.lastSeenDate, report.personInvolved.lastSeentime)}</p>
                     </HoverCardContent>
                 </HoverCard>
-                <h2 className="text-xl font-semibold">{`${report.personInvolved.firstName} ${report.personInvolved.lastName}`}</h2>
+                <h2 className="text-2xl font-semibold">{`${report.personInvolved.firstName} ${report.personInvolved.lastName}`}</h2>
                 <HoverCard>
                     <HoverCardTrigger>
-                      <p className="cursor-context-menu text-[#123F7B] text-sm font-light flex items-center"><FaMapMarkerAlt className="mr-1" /> {report.personInvolved.lastKnownLocation}</p>
+                      <p className="cursor-context-menu text-[#123F7B] text-sm font-light flex items-center pb-2"><FaMapMarkerAlt className="mr-1" /> {report.personInvolved.lastKnownLocation}</p>
                     </HoverCardTrigger>
                     <HoverCardContent>
                       <p className="text-[#123F7B] text-xs font-extralight place-self-center">Last known location</p>
@@ -166,12 +166,12 @@ const ReportMainPage = () => {
                 </HoverCard>
               </div>
               <div className="pt-4">
-                <div className="flex flex-row justify-start space-x-2">
+                <div className="flex flex-row justify-start space-x-2 place-items-center">
                   <div className=''>
-                    <img src={report.reporter?.avatar?.url} alt='Missing' className="h-8 w-8 rounded-full" />
+                    <img src={report.reporter?.avatar?.url} alt='Missing' className="h-10 w-10 rounded-full" />
                   </div>
-                  <div className='flex flex-col space-y-0'>
-                    <p className="text-sm font-semibold">{report.reporter?.firstName} {report.reporter?.lastName}</p>
+                  <div className='flex flex-col space-y-0 place-items-center'>
+                    <p className="text-xs font-semibold">{report.reporter?.firstName} {report.reporter?.lastName}</p>
                     <HoverCard>
                       <HoverCardTrigger>
                       <p className="cursor-context-menu text-[#123F7B] text-xs font-extralight">{formatDateTime(report.createdAt)}</p>
