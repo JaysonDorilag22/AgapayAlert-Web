@@ -21,6 +21,7 @@ const NavBar = () => {
   const initialValues = {
     email: '',
     password: '',
+    platform: 'web',
   };
 
   const validationSchema = Yup.object({
@@ -30,9 +31,19 @@ const NavBar = () => {
 
   const onSubmit = async (credentials, { setSubmitting, setErrors }) => {
     const response = await dispatch(login(credentials));
+    console.log('Login response:', response);
     setSubmitting(false);
     if (response.success) {
-      navigate('/');
+      const userRoles = response.data.user.roles;
+      if (userRoles.includes('user')) {
+        console.log('user: ',userRoles);
+        navigate('/');
+      } else {
+        console.log('Navigating to admin dashboard');
+        console.log('role: ',userRoles);
+        navigate('/admin/dashboard');
+
+      }
     } else {
       setErrors({ server: response.error });
     }

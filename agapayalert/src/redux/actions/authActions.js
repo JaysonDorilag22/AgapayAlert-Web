@@ -74,6 +74,7 @@ export const login = (credentials) => async (dispatch) => {
       credentials
     );
     dispatch({ type: LOGIN_SUCCESS, payload: data });
+    console.log(data);
     return { success: true, data };
   } catch (error) {
     const msg = error.response?.data?.msg || error.msg;
