@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { HiOutlineEye } from "react-icons/hi2";
 import { extractUniqueValues } from "@/utils/extractUniqueValues";
 import ReportDetailsModal from "@/components/ReportDetailsModal";
+import { FaSearch } from "react-icons/fa";
 
 const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilterChange, onSearchChange }) => {
   const [search, setSearch] = useState('');
@@ -20,9 +21,9 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
     setTypeOptions(uniqueTypeValues);
   }, [reports]);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    onSearchChange(e.target.value);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    onSearchChange(search);
   };
 
   const handleStatusChange = (e) => {
@@ -45,14 +46,19 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
 
   return (
     <div className="overflow-x-auto">
-      <div className="flex justify-between mb-4">
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={search}
-          onChange={handleSearchChange}
-          className="border border-gray-300 rounded px-4 py-2"
-        />
+      <div className="flex justify-start gap-4 mb-4">
+      {/* <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-2 py-1 border border-[#123F7B] rounded-full focus:outline-none"
+          />
+          <button type="submit" className="absolute right-0 top-0 mt-1 mr-2 bg-[#123F7B] text-white px-2 py-1 rounded-full">
+            <FaSearch />
+          </button>
+        </form> */}
         <select value={status} onChange={handleStatusChange} className="border border-gray-300 rounded px-4 py-2">
           <option value="">All Statuses</option>
           {statusOptions.map((statusOption) => (

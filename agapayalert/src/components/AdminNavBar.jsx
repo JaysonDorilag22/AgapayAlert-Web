@@ -22,7 +22,7 @@ const AdminNavBar = () => {
     return (
         <div className="fixed top-0 left-0 h-full w-[350px] bg-white z-50">
           <div className="flex place-items-center justify-center h-16 pt-2">
-            <Link to="/admin/dashboard">
+            <Link to="/">
             <img src={logo} alt="Admin Logo" className="h-[80px]" /> {/* Adjust the height as needed */}
             </Link>
           </div>

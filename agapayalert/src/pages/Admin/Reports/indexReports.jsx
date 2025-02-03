@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getReports, searchReports } from "../../../redux/actions/reportActions";
+import { getReports } from "../../../redux/actions/reportActions";
 import AdminLayout from "../../../layouts/AdminLayout";
 import ReportsTable from "./ReportTable/ReportsTable";
 
 const indexReports = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { reports, totalPages, currentPage } = useSelector((state) => state.reports);
   const [filters, setFilters] = useState({ page: 1, limit: 10 });
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,17 +27,14 @@ const indexReports = () => {
     setFilters((prevFilters) => ({ ...prevFilters, ...newFilters, page: 1 }));
   };
 
-  const handleSearchChange = async (query) => {
+  const handleSearchChange = (query) => {
     setSearchQuery(query);
-    const searchFilters = { ...filters, query, page: 1 };
-    const searchResult = await dispatch(searchReports(searchFilters));
-    console.log("Search Results:", searchResult.data);
+    setFilters((prevFilters) => ({ ...prevFilters, searchName: query, page: 1 }));
   };
 
   return (
     <AdminLayout>
       <div>
-        <h1 className="text-2xl font-bold mb-4">Reports</h1>
         <ReportsTable
           reports={reports}
           totalPages={totalPages}
