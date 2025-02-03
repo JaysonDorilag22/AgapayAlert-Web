@@ -65,6 +65,11 @@ export const verifyAccount = (verificationData) => async (dispatch) => {
   }
 };
 
+export const loginSuccess = (data) => ({
+  type: LOGIN_SUCCESS,
+  payload: data
+});
+
 // Login user
 export const login = (credentials) => async (dispatch) => {
   dispatch({ type: LOGIN_REQUEST });
@@ -74,7 +79,16 @@ export const login = (credentials) => async (dispatch) => {
       credentials
     );
     dispatch({ type: LOGIN_SUCCESS, payload: data });
-    console.log(data);
+
+    console.log("data from login: ",data);
+    console.log("token: ", data.token);
+
+    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('token', data.token);
+
+    // Set the token in axios headers
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+
     return { success: true, data };
   } catch (error) {
     const msg = error.response?.data?.msg || error.msg;

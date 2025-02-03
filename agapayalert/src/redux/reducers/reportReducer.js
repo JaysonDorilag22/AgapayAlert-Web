@@ -37,6 +37,9 @@ import {
     GET_UNDER_INVESTIGATION_REPORTS_REQUEST,
     GET_UNDER_INVESTIGATION_REPORTS_SUCCESS,
     GET_UNDER_INVESTIGATION_REPORTS_FAIL,
+    SEARCH_REPORTS_REQUEST,
+    SEARCH_REPORTS_SUCCESS,
+    SEARCH_REPORTS_FAIL,
     CLEAR_REPORTS
   } from "../actiontypes/reportTypes";
   
@@ -67,6 +70,15 @@ import {
     currentReport: null,
     detailsLoading: false,
     detailsError: null,
+    searchResults: {
+      reports: [],
+      currentPage: 1,
+      totalPages: 0,
+      totalReports: 0,
+      hasMore: false,
+    },
+    searchLoading: false,
+    searchError: null,
   };
   
   export const reportReducer = (state = initialState, action) => {
@@ -168,6 +180,7 @@ import {
       case GET_REPORT_FEED_REQUEST:
         return { ...state, loading: true };
       case GET_REPORT_FEED_SUCCESS:
+        console.log("Reducer GET_REPORT_FEED_SUCCESS:", action.payload);
         return {
           ...state,
           loading: false,
@@ -277,6 +290,34 @@ import {
           loading: false,
           error: action.payload,
         };
+        case SEARCH_REPORTS_REQUEST:
+          return {
+            ...state,
+            searchLoading: true,
+            searchError: null,
+          };
+    
+        case SEARCH_REPORTS_SUCCESS:
+          return {
+            ...state,
+            searchLoading: false,
+            searchResults: {
+              reports: action.payload.isNewSearch
+                ? action.payload.reports
+                : [...state.searchResults.reports, ...action.payload.reports],
+              currentPage: action.payload.currentPage,
+              totalPages: action.payload.totalPages,
+              totalReports: action.payload.totalReports,
+              hasMore: action.payload.hasMore,
+            },
+          };
+    
+        case SEARCH_REPORTS_FAIL:
+          return {
+            ...state,
+            searchLoading: false,
+            searchError: action.payload,
+          };
   
       default:
         return state;

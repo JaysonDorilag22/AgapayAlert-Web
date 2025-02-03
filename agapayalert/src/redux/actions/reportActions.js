@@ -40,6 +40,9 @@ import {
   GET_UNDER_INVESTIGATION_REPORTS_REQUEST,
   GET_UNDER_INVESTIGATION_REPORTS_SUCCESS,
   GET_UNDER_INVESTIGATION_REPORTS_FAIL,
+  SEARCH_REPORTS_REQUEST,
+  SEARCH_REPORTS_SUCCESS,
+  SEARCH_REPORTS_FAIL,
 } from "../actiontypes/reportTypes";
 
 // Create Report
@@ -75,7 +78,7 @@ export const createReport = (reportData) => async (dispatch) => {
 };
 
 // In reportActions.js
-export const getReports = ({ page = 1, limit = 10, type = null }) => async (dispatch) => {
+export const getReports = ({ page = 1, limit = 10, status = null, type = null, search = '', startDate = null, endDate = null }) => async (dispatch) => {
   try {
     dispatch({ type: GET_REPORTS_REQUEST });
 
@@ -83,10 +86,14 @@ export const getReports = ({ page = 1, limit = 10, type = null }) => async (disp
     const queryParams = new URLSearchParams({
       page,
       limit,
-      ...(type && { type }) // Only add type if it exists
+      ...(status && { status }),
+      ...(type && { type }),
+      ...(search && { search }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate })
     });
 
-    const url = `${server}/report/getReports`;
+    const url = `${server}/report/getReports?${queryParams.toString()}`;
 
     console.log('url', url);
     const { data } = await axios.get(url, {
@@ -299,7 +306,10 @@ export const getReportFeed = (params = {}) => async (dispatch) => {
       page: params.page || 1,
       limit: params.limit || 10,
       ...(params.city && { city: params.city }),
-      ...(params.type && { type: params.type }) // Add type parameter
+      ...(params.type && { type: params.type }),
+      ...(params.firstName && { firstName: params.firstName }),
+      ...(params.lastName && { lastName: params.lastName }),
+      ...(params.searchName && { searchName: params.searchName }),
     });
 
     const { data } = await axios.get(
@@ -311,8 +321,8 @@ export const getReportFeed = (params = {}) => async (dispatch) => {
       type: GET_REPORT_FEED_SUCCESS,
       payload: {
         ...data.data,
-        isNewSearch: params.page === 1
-      }
+        isNewSearch: params.page === 1,
+      },
     });
 
     return { success: true, data: data.data };
@@ -320,7 +330,7 @@ export const getReportFeed = (params = {}) => async (dispatch) => {
     const message = error.response?.data?.msg || error.message;
     dispatch({
       type: GET_REPORT_FEED_FAIL,
-      payload: message
+      payload: message,
     });
     return { success: false, error: message };
   }
@@ -445,6 +455,49 @@ export const getReportDetails = (reportId) => async (dispatch) => {
     const message = error.response?.data?.msg || error.message;
     dispatch({
       type: GET_REPORT_DETAILS_FAIL,
+      payload: message
+    });
+    return { success: false, error: message };
+  }
+};
+
+export const searchReports = ({ page = 1, limit = 10, query = '', status = '', type = '' }) => async (dispatch) => {
+  try {
+    dispatch({ type: SEARCH_REPORTS_REQUEST });
+
+    // Build query parameters properly
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      ...(query && { query }),
+      ...(status && { status }),
+      ...(type && { type })
+    });
+
+    const url = `${server}/report/search?${queryParams.toString()}`;
+
+    console.log('url', url);
+    const { data } = await axios.get(url, {
+      withCredentials: true
+    });
+
+    dispatch({
+      type: SEARCH_REPORTS_SUCCESS,
+      payload: {
+        reports: data.data.reports,
+        currentPage: parseInt(data.data.currentPage),
+        totalPages: parseInt(data.data.totalPages),
+        totalReports: parseInt(data.data.totalReports),
+        hasMore: data.data.hasMore
+      }
+    });
+
+    return { success: true, data: data.data };
+  } catch (error) {
+    console.error('Search error:', error);
+    const message = error.response?.data?.msg || error.message;
+    dispatch({
+      type: SEARCH_REPORTS_FAIL,
       payload: message
     });
     return { success: false, error: message };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from '../redux/actions/authActions';
 import logo from "../assets/AGAPAYALERT - imagotype.svg";
@@ -8,6 +8,11 @@ import { MdOutlineDashboard, MdOutlineInsertChart, MdOutlineLocalPolice, MdOutli
 const AdminNavBar = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const getLinkClass = (path) => {
+      return location.pathname === path ? 'bg-[#D46A79]/10 rounded-md py-2 px-4' : 'py-2 px-4';
+    };
   
     const handleLogout = async () => {
       await dispatch(logout());
@@ -36,14 +41,14 @@ const AdminNavBar = () => {
                 </Link>
               </li>
               <div className="mt-8 space-y-2 font-extrabold text-xl">
-              <li className="bg-[#D46A79]/10 rounded-md py-2 px-4">
+              <li className={getLinkClass('/admin/dashboard')}>
                 <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineDashboard className="" size={38} />
                     <p>Dashboard</p>
                 </Link>
               </li>
-              <li className="py-2 px-4">
-                <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
+              <li className={getLinkClass('/admin/reports')}>
+                <Link to="/admin/reports" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineInsertChart className="" size={38} />
                     <p>Reports</p>
                 </Link>

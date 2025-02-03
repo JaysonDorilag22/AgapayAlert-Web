@@ -28,7 +28,8 @@ import {
     error: null,
     msg: null,
     isAuthenticated: false,
-    success: false
+    success: false,
+    initialAuthCheck: true
   };
   
   export const authReducer = (state = initialState, action) => {
@@ -62,7 +63,8 @@ import {
           msg: action.payload.msg,
           isAuthenticated: true,
           success: true,
-          error: null
+          error: null,
+          initialAuthCheck: false
         };
   
       // Verification success case
@@ -85,7 +87,8 @@ import {
         return {
           ...initialState,
           msg: 'Logged out successfully',
-          success: true
+          success: true,
+          initialAuthCheck: false 
         };
   
       // Other success cases
@@ -116,7 +119,8 @@ import {
           loading: false,
           loadingAction: null,
           error: action.payload.msg,
-          success: false
+          success: false,
+          initialAuthCheck: false
         };
   
       // Clear states
