@@ -21,7 +21,7 @@ import pasaychief from "@/assets/Chiefs/pasaychief.png";
 import paranaquechief from "@/assets/Chiefs/paranaquechief.png";
 
 // Other assets
-import tup from "@/assets/tup.png";
+import tup from "@/assets/TUP.png";
 const slides = [
     {
       name: "PCOL JEAN I. DELA TORRE",
