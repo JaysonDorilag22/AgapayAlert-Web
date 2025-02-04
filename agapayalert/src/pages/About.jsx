@@ -15,7 +15,7 @@ import paranaque from "@/assets/pnplogo/ParanaqueLogo.svg";
 import pateros from "@/assets/pnplogo/PaterosLogo.svg";
 
 // Chief Photos
-import makatichief from "@/assets/Chiefs/MakatiChief.png";
+import makatichief from "@/assets/Chiefs/makatichief.png";
 import taguigchief from "@/assets/Chiefs/taguigchief.png";
 import pasaychief from "@/assets/Chiefs/pasaychief.png";
 import paranaquechief from "@/assets/Chiefs/paranaquechief.png";
