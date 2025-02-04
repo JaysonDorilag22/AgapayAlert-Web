@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from "react";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import logoimago from "../assets/AGAPAYALERT - imagotype.svg";
-import makatichief from "../assets/Chiefs/MakatiChief.png";
+import makatichief from "../assets/Chiefs/makatichief.png";
 import makati from "../assets/pnplogo/MakatiLogo.svg";
 import taguig from "../assets/pnplogo/TaguigLogo.svg";
 import pasay from "../assets/pnplogo/PasayLogo.svg";
 import paranaque from "../assets/pnplogo/ParanaqueLogo.svg";
 import pateros from "../assets/pnplogo/PaterosLogo.svg";
-import tup from "../assets/tup.png";
+import tup from "../assets/TUP.png";
 import taguigchief from "../assets/Chiefs/taguigchief.png";
 import pasaychief from "../assets/Chiefs/pasaychief.png";
 import paranaquechief from "../assets/Chiefs/paranaquechief.png";
