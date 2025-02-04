@@ -1,17 +1,27 @@
-import React, {useState, useEffect} from "react";
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import logoimago from "../assets/AGAPAYALERT - imagotype.svg";
-import makatichief from "../assets/Chiefs/MakatiChief.png";
-import makati from "../assets/pnplogo/MakatiLogo.svg";
-import taguig from "../assets/pnplogo/TaguigLogo.svg";
-import pasay from "../assets/pnplogo/PasayLogo.svg";
-import paranaque from "../assets/pnplogo/ParanaqueLogo.svg";
-import pateros from "../assets/pnplogo/PaterosLogo.svg";
-import tup from "../assets/tup.png";
-import taguigchief from "../assets/Chiefs/taguigchief.png";
-import pasaychief from "../assets/Chiefs/pasaychief.png";
-import paranaquechief from "../assets/Chiefs/paranaquechief.png";
+// React imports
+import React, { useState, useEffect } from "react";
 
+// Icons
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+
+// Main logo
+import logoimago from "@/assets/AGAPAYALERT - imagotype.svg";
+
+// PNP Station Logos
+import makati from "@/assets/pnplogo/MakatiLogo.svg";
+import taguig from "@/assets/pnplogo/TaguigLogo.svg";
+import pasay from "@/assets/pnplogo/PasayLogo.svg";
+import paranaque from "@/assets/pnplogo/ParanaqueLogo.svg";
+import pateros from "@/assets/pnplogo/PaterosLogo.svg";
+
+// Chief Photos
+import makatichief from "@/assets/Chiefs/MakatiChief.png";
+import taguigchief from "@/assets/Chiefs/taguigchief.png";
+import pasaychief from "@/assets/Chiefs/pasaychief.png";
+import paranaquechief from "@/assets/Chiefs/paranaquechief.png";
+
+// Other assets
+import tup from "@/assets/tup.png";
 const slides = [
     {
       name: "PCOL JEAN I. DELA TORRE",
