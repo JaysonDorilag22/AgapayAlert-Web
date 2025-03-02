@@ -8,6 +8,8 @@ import Support from './pages/Support';
 import Dashboard from './pages/Admin/Dashboard';
 import IndexReports from './pages/Admin/Reports/indexReports';
 import NavBar from './components/NavBar';
+import ProfileLayout from './layouts/ProfileLayout';
+import ProfileCard from './pages/User/ProfileCard';
 import ProtectedRoute from './navigations/ProtectedRoute';
 import { loginSuccess } from './redux/actions/authActions';
 
@@ -27,13 +29,21 @@ const AppContent = () => {
 
   return (
     <div className="">
-      {!isAdminRoute && <NavBar />}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/reports" element={<ReportMainPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/support" element={<Support />} />
-          <Route
+      {!isAdminRoute && location.pathname !== '/profile' && <NavBar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/reports" element={<ReportMainPage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/support" element={<Support />} />
+        <Route
+          path="/profile"
+          element={
+            <ProfileLayout>
+              <ProfileCard />
+            </ProfileLayout>
+          }
+        />
+        <Route
           path="/admin/*"
           element={
             <ProtectedRoute>
@@ -45,8 +55,8 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
-          {/* Add more admin routes here */}
-        </Routes>
+        {/* Add more routes here */}
+      </Routes>
     </div>
   );
 };

@@ -15,7 +15,8 @@ const AdminNavBar = () => {
     };
   
     const handleLogout = async () => {
-      await dispatch(logout());
+      const result = await dispatch(logout());
+      console.log("Logout Result:", result);
       navigate('/');
     };
 

@@ -103,6 +103,7 @@ export const logout = () => async (dispatch) => {
   try {
     await axios.post(`${server}/auth/logout`);
     dispatch({ type: LOGOUT_SUCCESS });
+    localStorage.clear();
     return { success: true };
   } catch (error) {
     const msg = error.response?.data?.msg || error.msg;

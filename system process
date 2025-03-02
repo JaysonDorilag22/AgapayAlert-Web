@@ -1,0 +1,157 @@
+DETAILED SYSTEM PROCESS GUIDE FOR AGAPAYALERT
+
+This guide outlines how AgapayAlert processes missing person and hit-and-run reports, ensuring structured data handling, verification, and community/law enforcement engagement.
+
+1. USER REGISTRATION & AUTHENTICATION
+
+    1.1. Account Creation
+
+        User signs up via email(/phone number).
+        User verifies account through OTP (One-Time Password or Identification).
+        Profile creation (name, contact info).
+
+    1.2. Login & Authentication
+
+        User enters credentials.
+        System verifies credentials against the database.
+        If successful → Redirect to Home (User) / Dashboard (Admin).
+        If failed → Show error message and allow retry.
+
+2. REPORTING A MISSING PERSON
+
+    2.1. Filling Out the Missing Person Report Form
+
+        Fields Required:
+        Full Name of Missing Person
+        Relationship
+        Age
+        Last Seen Location (auto-suggest from map API)
+        Last Seen Date & Time
+
+        Optional:
+        Physical Description (height, weight, distinguishing marks)
+        Clothing Worn
+        Recent Photo Upload
+        Additional Notes (e.g., medical conditions, companions, known threats)
+
+    2.2. Categorizing the Case Type
+
+        IF Last Seen Date & Time is less than 24 hours ago → Case Type = “Absent”
+        IF Last Seen Date & Time is more than 24 hours ago → Case Type = “Missing”
+
+    2.3. System Validation & Verification
+
+        Check for duplicate reports (compare name, photo, last seen location).
+        If duplicate detected → Prompt user to confirm before proceeding.
+        If details are insufficient → Prompt user for additional details.
+
+    2.4. Law Enforcement Notification & Report Approval
+
+        If case type = Absent, notify police with low-priority alert.
+        If case type = Missing, notify police with high-priority alert.
+        Police officer/admin reviews the report for approval.
+        If approved → Publish alert.
+        If rejected → Notify user with reason.
+
+    2.5. Alert Distribution & Community Engagement
+
+        System sends alerts to:
+        Registered users within a 5-10 km radius of last seen location.
+        Police stations and law enforcement partners.
+        Users can submit tips or sightings through the app.
+
+    2.6. Case Investigation & Tracking
+
+        Police officer/admin updates the case status (e.g., “Under Investigation,” “Sighted,” “Found”).
+        *AI-powered analysis of tips (e.g., filtering credible leads based on location and timestamps).
+
+    2.7. Case Resolution & Closure
+
+        If person is found:
+        Update status to "Recovered".
+        Notify reportee and law enforcement.
+
+        If case remains unsolved:
+        Continue monitoring, escalate if necessary.
+
+    2.8. Transition to Confidentiality (If Case Changes to Abduction/Kidnapping)
+
+        If the investigator confirms that the missing person case changes to an abduction/kidnapping:
+        All further information about the person is confidential.
+        No further public alerts or community involvement.
+        Only the reportee is notified of the change.
+        Case is transferred to the appropriate department or team of investigators.
+
+3. REPORTING A HIT-AND-RUN INCIDENT
+
+    3.1. Filling Out the Hit-and-Run Report Form
+
+        Fields Required:
+        Date & Time of Incident
+        Location (Auto-Detect from GPS)
+        Vehicle Description (Make, Model, Color, Plate Number if available)
+        Photo/Video Upload (Crash site, suspect vehicle, any relevant evidence)
+        Injured Victim(s) Details (if applicable)
+        Additional Witnesses & Statements
+
+    3.2. System Verification
+
+        Check for duplicate reports (same location, vehicle description).
+        AI analyzes uploaded images to extract license plate number (if visible).
+
+    3.3. Law Enforcement Notification
+
+        If license plate is identified, the system cross-checks vehicle registration databases.
+        If a match is found, notify police with vehicle owner details.
+        If no match, flag as “Unidentified Suspect” for further investigation.
+
+    3.4. Community & Witness Engagement
+
+        Send alerts to users near the crash site to gather additional evidence.
+        Users can upload additional images or videos of the suspect vehicle.
+
+    3.5. Case Status & Investigation Updates
+
+        If the suspect is identified, case status updates to "Under Investigation."
+        Police follow up with the vehicle owner for questioning.
+        Victim or witnesses receive real-time case updates.
+
+    3.6. Case Resolution & Closure
+
+        If suspect is caught & charged → Case is Closed.
+        If no leads, continue investigation and periodically reassess.
+
+4. SYSTEM NOTIFICATIONS & COMMUNITY ALERTS
+
+    4.1. Automatic Notifications
+        For Missing Persons Cases:
+        Nearby users receive push notifications (& SMS alerts), post on the website and social media.
+        Case updates trigger real-time alerts to involved parties (unless marked confidential).
+
+    For Hit-and-Run Cases:
+        Community users within a 5-10 km radius get alerts.
+        Witnesses and tipsters receive direct updates from police.
+
+    4.2. *AI & Smart Filtering
+        AI helps filter out false reports and prioritizes verified leads.
+        Users who frequently submit false reports may be flagged.
+
+5. ADMIN & LAW ENFORCEMENT DASHBOARD
+
+    5.1. Case Management System
+        View all active missing person & hit-and-run cases.
+        Assign investigators to each case.
+        Monitor incoming leads & community tips.
+
+    5.2. Data & Analytics
+
+        Track recovery rates, response times, and high-risk areas.
+        Generate reports for law enforcement insights.
+
+    5.3. Confidential Case Management (For Abduction/Kidnapping)
+
+        If a case transitions to an abduction/kidnapping:
+        The system restricts visibility of case data.
+        Information is accessible only to assigned investigators.
+        Transfer protocols are initiated to the appropriate department.
+

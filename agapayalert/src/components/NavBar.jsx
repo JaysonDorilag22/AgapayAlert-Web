@@ -9,6 +9,8 @@ import { FaGoogle } from 'react-icons/fa';
 import { Button } from '../components/ui/button';
 import logo from '../assets/AGAPAYALERT.svg';
 import loginvideo from '../assets/loginvideo.mp4';
+import Profile from './Profile';
+
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -50,7 +52,8 @@ const NavBar = () => {
   };
 
   const handleLogout = async () => {
-    await dispatch(logout());
+    const result = await dispatch(logout());
+    console.log('Logout Result:', result);
     navigate('/');
   };
 
@@ -67,31 +70,7 @@ const NavBar = () => {
         <div className="hidden lg:flex place-items-center pr-16">
           {isAuthenticated ? (
             <div className="relative">
-              <div
-                className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <img src={user?.avatar?.url || "https://via.placeholder.com/150"}
-                  alt={user?.firstName} className="h-8 w-8 rounded-full" />
-                <span>{user?.firstName}</span>
-              </div>
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 text-[#123F7B] hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-[#D46A79] hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <Profile user={user} handleLogout={handleLogout} />
             </div>
           ) : (
             <Dialog>
@@ -101,7 +80,7 @@ const NavBar = () => {
               <DialogContent className="sm:max-w-[1120px] sm:max-h-[1020px]">
                 <div className="pl-6 pr-2 py-2">
                   <div className="grid grid-cols-5 gap-14">
-                    <div className='col-start-1 col-end-3 justify-center flex flex-col'>
+                    <div className='col-start-1 col-end-5 lg:col-start-1 lg:col-end-3 justify-center flex flex-col'>
                       <div className='pb-12'>
                         <img src={logo} alt='AGAPAYALERT' className='h-14 w-14' />
                       </div>
@@ -158,8 +137,8 @@ const NavBar = () => {
                         </div>
                       </div>
                     </div>
-                    <div className='col-start-3 col-end-6 place-items-center'>
-                      <video src={loginvideo} alt="AGAPAYALERT" className="w-full h-auto rounded-3xl" autoPlay loop muted />
+                    <div className='col-start-4 col-end-6 lg:col-start-3 lg:col-end-6 place-items-center'>
+                      <video src={loginvideo} alt="AGAPAYALERT" className="w-full h-auto hidden lg:inline rounded-3xl" autoPlay loop muted />
                     </div>
                   </div>
                 </div>
@@ -186,31 +165,7 @@ const NavBar = () => {
           <Link to="/support" className={`font-normal text-base ${location.pathname === '/support' ? 'bg-[#123F7B] rounded-full px-4 py-2 text-white' : ''}`} onClick={() => setMenuOpen(false)}>SUPPORT</Link>
           {isAuthenticated ? (
             <div className="relative">
-              <div
-                className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <img src={user?.avatar?.url || "https://via.placeholder.com/150"}
-                  alt={user?.firstName} className="h-8 w-8 rounded-full" />
-                <span>{user?.firstName}</span>
-              </div>
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 text-[#123F7B] hover:bg-gray-100"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-[#D46A79] hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <Profile user={user} handleLogout={handleLogout} />
             </div>
           ) : (
             <Dialog>

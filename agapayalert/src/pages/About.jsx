@@ -84,7 +84,7 @@ const About = () => {
     <div className="relative min-h-screen">
       <div className="h-screen">
         <div className="h-full w-full place-items-center">
-          <div className="Container bg-[#123F7B] h-[440px] w-full rounded-[75px] shadow-lg px-[24px] overflow-hidden content-center">
+          <div className="Container bg-[#123F7B] h-[640px] lg:h-[440px] w-full rounded-[75px] shadow-lg px-[24px] overflow-hidden content-center">
             <div className="grid grid-cols-1 lg:grid-cols-2 justify-between gap-2">
               <div className="flex flex-col justify-start w-full max-w-xl py-2 pl-4 lg:pl-12 content-center">
                 <p className="text-white text-lg lg:text-2xl font-extrabold">Building Safer Communities Together</p>
@@ -104,7 +104,7 @@ const About = () => {
           <div className="Container bg-white h-[600px] w-full mt-4">
             <div className="relative w-full">
               <div className="grid grid-cols-1 lg:grid-cols-2 justify-between gap-2">
-                <div className="flex flex-col justify-start w-full pl-4 lg:pl-32 pt-8 lg:pt-16 content-start">
+                <div className="flex flex-col justify-start w-full pl-4 lg:pl-32 pt-8 lg:pt-16 text-center lg:text-start lg:content-start">
                   <p className="text-[#123F7B] text-2xl lg:text-4xl font-extrabold">{slides[currentSlide].name}</p>
                   <p className="text-[#D46A79] text-lg lg:text-2xl font-light pt-1">{slides[currentSlide].title}</p>
                   <p className="text-[#123F7B] text-sm lg:text-lg font-light pt-4 pr-4 lg:pr-12">{slides[currentSlide].description}</p>
@@ -116,7 +116,7 @@ const About = () => {
               <div className="fixed bottom-0 left-0 w-full px-4 py-2 backdrop-blur-lg bg-[#123F7B] bg-opacity-20 z-50">
                 <div className="flex flex-row h-[100px] lg:h-[150px] w-full justify-between items-center space-x-4">
                   <FaArrowLeft className="text-white text-xl lg:text-2xl cursor-pointer" onClick={handlePrevClick} />
-                  <div className="flex flex-row justify-center items-center space-x-12 lg:space-x-24">
+                  <div className="flex flex-row justify-center items-center space-x-4 lg:space-x-24">
                     {images.map((image, index) => (
                       <img
                         key={index}

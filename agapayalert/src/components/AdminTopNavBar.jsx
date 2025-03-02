@@ -1,19 +1,29 @@
 import React, {useState, useEffect} from 'react';
-import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Notifications from './Notifications';
+import Profile from './Profile';
+import { RiArrowDropDownLine } from "react-icons/ri";
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
-import { MdNotifications } from 'react-icons/md';
+import { Separator } from '../components/ui/Separator';
+import { logout } from '@/redux/actions/authActions';
+
 
 const AdminTopNavBar = () => {
   const { user } = useSelector((state) => state.auth);
   const location = useLocation();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: 'New report submitted' },
-    { id: 2, message: 'User feedback received' },
-    { id: 3, message: 'System update available' },
-  ]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    const result = await dispatch(logout());
+    if (result.success) {
+      navigate('/');
+    } else {
+      console.error("Logout failed");
+    }
+  };
 
   // Function to get the current page name based on the location
   const getPageName = () => {
@@ -59,32 +69,10 @@ const AdminTopNavBar = () => {
         </div>
       </div>
       <div className='flex flex-row space-x-8 justify-between'>
-      <Popover>
-          <PopoverTrigger asChild>
-            <button className="relative">
-              <MdNotifications size={24} />
-              {notifications.length > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center h-4 w-4 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                  {notifications.length}
-                </span>
-              )}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 p-4 bg-white shadow-lg rounded-lg">
-            <h2 className="text-lg font-semibold mb-2">Notifications</h2>
-            <ul>
-              {notifications.map((notification) => (
-                <li key={notification.id} className="mb-1">
-                  {notification.message}
-                </li>
-              ))}
-            </ul>
-          </PopoverContent>
-        </Popover>
-      <div className="flex items-center space-x-4">
-        <img src={user?.avatar?.url || "https://via.placeholder.com/150"} alt={user?.firstName} className="h-8 w-8 rounded-full" />
-        <span>{user?.firstName}</span>
-      </div>
+        <Notifications />
+        <div className="place-items-center">
+        <Profile user={user} handleLogout={handleLogout} />
+        </div>
       </div>
     </div>
   );

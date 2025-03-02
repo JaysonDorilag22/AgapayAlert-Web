@@ -82,13 +82,13 @@ const ReportMainPage = () => {
   return (
     <div className="h-screen">
       <div className="h-full w-full place-items-center">
-        <div className="Container bg-[#123F7B] h-2/6 w-full rounded-sf overflow-hidden content-center shadow-lg px-8 py-2">
+        <div className="Container bg-[#123F7B] h-3/6 lg:h-2/6 w-full rounded-sf overflow-hidden content-center shadow-lg px-8 py-2">
           <div className='grid grid-cols-2 justify-between gap-4'>
-            <div className='grid grid-row-3 gap-6 justify-start'>
-              <div className='pl-16 text-wrap w-full max-w-xl'>
-                <h1 className='text-4xl font-extrabold text-white tracking-wide'>Are you looking for someone?</h1>
+            <div className='grid grid-row-3 gap-6 justify-start pl-16'>
+              <div className='text-wrap w-full max-w-xl'>
+                <h1 className='text-xl lg:text-4xl font-extrabold text-white tracking-wide'>Are you looking for someone?</h1>
               </div>
-              <div className='pl-16 w-full'>
+              <div className='w-full'>
                 <form onSubmit={handleSearchSubmit} className="relative w-full">
                   <input
                     type="text"
@@ -101,22 +101,22 @@ const ReportMainPage = () => {
                   </button>
                 </form>
               </div>
-              <div className='flex flex-row pl-16 w-full'>
+              <div className='flex flex-row w-full'>
                 <p className='text-md font-light text-white'>Haven't found them yet?</p>
                 <Link to="/" className="text-[#D46A79] text-md font-base pl-1">Report here.</Link>
               </div>
             </div>
             <div className='relative'>
-              <img src={logowhite} className='absolute overflow-visible object-cover h-full w-full' />
+              <img src={logowhite} className='absolute hidden lg:inline overflow-visible object-cover h-full w-full' />
             </div>
           </div>
         </div>
-        <div className="flex flex-row justify-between w-full px-8 pt-4">
-          <div className="flex flex-col justify-start pl-16">
+        <div className="flex flex-row justify-between w-full px-8 pt-4 space-x-2">
+          <div className="flex flex-col justify-start pl-4 lg:pl-16">
             <h1 className="text-2xl font-bold">List of Missing Persons</h1>
           </div>
-          <div className="flex flex-col justify-end pr-16">
-            <div className="flex flex-row place-items-center">
+          <div className="flex flex-col justify-end pr-4lg:pr-16">
+            <div className="flex flex-col lg:flex-row items-end lg:place-items-center space-y-2 lg:space-y-0">
               <label htmlFor="city" className="mr-2">City:</label>
               <select id="city" name="city" value={searchParams.city} onChange={handleFilterChange} className="border border-[#123F7B] rounded-full px-2 py-1">
                 <option value="">All</option>
