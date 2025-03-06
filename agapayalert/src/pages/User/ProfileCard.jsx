@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from "../../components/ui/tooltip";
 import { formatDateToMonthYear } from '../../utils/dateUtils';
+import ProfileLayout from '@/layouts/ProfileLayout';
 
 const ProfileCard = () => {
     const user = useSelector((state) => state.auth.user);
@@ -32,7 +33,7 @@ const ProfileCard = () => {
       };
 
     return (
-        
+    <ProfileLayout>
         <div className='relative flex flex-row justify-center place-items-center'>
             <div className='relative w-[620px] h-[530px] mx-[10px] bg-white rounded-[45px] shadow-lg shadow-[#123f7b]/25 overflow-hidden'>
                 <div className='relative h-[150px] w-full overflow-hidden'>
@@ -195,6 +196,7 @@ const ProfileCard = () => {
                 </div>
             </div>
         </div>
+    </ProfileLayout>
     );
 };
 

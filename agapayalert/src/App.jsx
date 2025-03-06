@@ -8,7 +8,7 @@ import Support from './pages/Support';
 import Dashboard from './pages/Admin/Dashboard';
 import IndexReports from './pages/Admin/Reports/indexReports';
 import NavBar from './components/NavBar';
-import ProfileLayout from './layouts/ProfileLayout';
+import ReportCard from './pages/User/ReportCard';
 import ProfileCard from './pages/User/ProfileCard';
 import ProtectedRoute from './navigations/ProtectedRoute';
 import { loginSuccess } from './redux/actions/authActions';
@@ -16,6 +16,7 @@ import { loginSuccess } from './redux/actions/authActions';
 const AppContent = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isProfileRoute = location.pathname.startsWith('/profile');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -29,18 +30,19 @@ const AppContent = () => {
 
   return (
     <div className="">
-      {!isAdminRoute && location.pathname !== '/profile' && <NavBar />}
+      {!isAdminRoute && !isProfileRoute && <NavBar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/reports" element={<ReportMainPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/support" element={<Support />} />
         <Route
-          path="/profile"
+          path="/profile/*"
           element={
-            <ProfileLayout>
-              <ProfileCard />
-            </ProfileLayout>
+            <Routes>
+              <Route path="" element={<ProfileCard />} />
+              <Route path="report" element={<ReportCard />} />
+            </Routes>
           }
         />
         <Route
