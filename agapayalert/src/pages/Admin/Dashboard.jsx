@@ -129,7 +129,7 @@ const Dashboard = () => {
                     <div className="text-[#123F7B] font-light text-md">
                       Last Known Location: <span className="font-bold">{report.personInvolved.lastKnownLocation}</span>
                     </div>
-                    <div className="text-[#123F7B] font-bold text-xs">Report ID: {report._id}</div>
+                    <div className="text-[#123F7B] font-bold text-xs">Report ID: {report.caseId}</div>
                   </div>
                 </div>
                 <div className="col-start-6 col-end-7 place-items-center content-center justify-center">

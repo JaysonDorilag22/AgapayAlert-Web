@@ -32,7 +32,7 @@ const AdminTopNavBar = () => {
         return 'Dashboard';
       case '/admin/reports':
         return 'Reports';
-      case '/admin/police-stations':
+      case '/admin/police-station':
         return 'Police Stations';
       case '/admin/cities':
         return 'Cities';

@@ -55,7 +55,7 @@ const AdminNavBar = () => {
                 </Link>
               </li>
               <li className="py-2 px-4">
-                <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
+                <Link to="/admin/police-station" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineLocalPolice className="" size={38} />
                     <p>Police Stations</p>
                 </Link>

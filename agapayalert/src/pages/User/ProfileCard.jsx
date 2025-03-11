@@ -20,6 +20,7 @@ import {
 } from "../../components/ui/tooltip";
 import { formatDateToMonthYear } from '../../utils/dateUtils';
 import ProfileLayout from '@/layouts/ProfileLayout';
+import { getRoleDisplayName } from '@/utils/userroles';
 
 const ProfileCard = () => {
     const user = useSelector((state) => state.auth.user);
@@ -52,7 +53,7 @@ const ProfileCard = () => {
                     <div className='flex flex-col place-items-start justify-start pb-1'>
                         <p className='text-2xl font-extrabold'>{user?.firstName} {user?.lastName}</p>
                         <div className='bg-white rounded-full py-0.5 px-2 place-items-center border border-[#D46A79]'>
-                        <p className='text-[#D46A79] text-xs font-medium'>{user?.roles[0]}</p>
+                        <p className='text-[#D46A79] text-xs font-medium'>{getRoleDisplayName(user?.roles[0])}</p>
                         </div>
                     </div>
                     <div className='flex flex-col place-items-start w-full space-y-4'>

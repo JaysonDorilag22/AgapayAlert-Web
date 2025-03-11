@@ -10,6 +10,7 @@ import IndexReports from './pages/Admin/Reports/indexReports';
 import NavBar from './components/NavBar';
 import ReportCard from './pages/User/ReportCard';
 import ProfileCard from './pages/User/ProfileCard';
+import PoliceStation from './pages/Admin/PoliceStation/indexPolice';
 import ProtectedRoute from './navigations/ProtectedRoute';
 import { loginSuccess } from './redux/actions/authActions';
 
@@ -52,6 +53,7 @@ const AppContent = () => {
               <Routes>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="reports" element={<IndexReports />} />
+                <Route path="police-station" element={<PoliceStation />} />
                 {/* Add more admin routes here */}
               </Routes>
             </ProtectedRoute>

@@ -44,8 +44,47 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
     setSelectedReportId(null);
   };
 
+  const getStatusTable  = (status) => {
+    switch (status) {
+        case 'Pending':
+            return (
+                <div className='bg-[#FBBC05]/10 px-2 py-2 rounded-full'>
+                      <p className='text-[#FBBC05] text-xs font-semibold text-center'>{status}</p>
+                </div>
+            );
+        case 'Assigned':
+            return (
+                <div className='bg-[#123F7B]/10 px-2 py-2 rounded-full'>
+                      <p className='text-[#123F7B] text-xs font-semibold text-center'>{status}</p>
+                </div>
+            );
+        case 'Under Investigation':
+            return (
+                <div className='bg-[#123F7B] px-2 py-2 rounded-full'>
+                    <p className='text-white text-xs font-semibold text-center'>{status}</p>
+                </div>
+            );
+        case 'Resolved':
+            return (
+                <div className='bg-[#34A853]/10 px-2 py-2 rounded-full'>
+                    <p className='text-[#34A853] text-xs font-semibold text-center'>{status}</p>
+                </div>
+            );
+    }
+  };
+
+  const handleCopyToClipboard = (text) => {
+    setTimeout(() => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Copied to clipboard: ' + text);
+        }).catch((err) => {
+            console.error('Failed to copy text: ', err);
+        });
+    }, 100);
+};
+
   return (
-    <div className="overflow-x-auto">
+    <div className="w-full">
       <div className="flex justify-start gap-4 mb-4">
       {/* <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg">
           <input
@@ -59,7 +98,7 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
             <FaSearch />
           </button>
         </form> */}
-        <select value={status} onChange={handleStatusChange} className="border border-gray-300 rounded px-4 py-2">
+        <select value={status} onChange={handleStatusChange} className="border border-[#123f7B] rounded-lg px-4 py-2">
           <option value="">All Statuses</option>
           {statusOptions.map((statusOption) => (
             <option key={statusOption} value={statusOption}>
@@ -67,7 +106,7 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
             </option>
           ))}
         </select>
-        <select value={type} onChange={handleTypeChange} className="border border-gray-300 rounded px-4 py-2">
+        <select value={type} onChange={handleTypeChange} className="border border-[#123f7B] rounded-lg px-4 py-2">
           <option value="">All Types</option>
           {typeOptions.map((typeOption) => (
             <option key={typeOption} value={typeOption}>
@@ -76,26 +115,27 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
           ))}
         </select>
       </div>
-      <table className="min-w-full bg-white border border-gray-300 shadow-lg">
-        <thead>
+      <table className="min-w-full bg-white rounded-2xl px-2 shadow-[#123F7B]/25 shadow-lg overflow-hidden">
+        <thead className="bg-[#123F7B] text-white">
           <tr>
-            <th className="py-2 px-4 border-b border-gray-300">Report ID</th>
-            <th className="py-2 px-4 border-b border-gray-300">Type</th>
-            <th className="py-2 px-4 border-b border-gray-300">Name</th>
-            <th className="py-2 px-4 border-b border-gray-300">Date & Time Reported</th>
-            <th className="py-2 px-4 border-b border-gray-300">Last Known Location</th>
-            <th className="py-2 px-4 border-b border-gray-300">Action</th>
+            <th className="py-2 px-4 text-start">Report ID</th>
+            <th className="py-2 px-4 text-start">Type</th>
+            <th className="py-2 px-4 text-start">Name</th>
+            <th className="py-2 px-4 text-start">Date & Time Reported</th>
+            <th className="py-2 px-4 text-start">Last Known Location</th>
+            <th className="py-2 px-4 text-start">Status</th>
+            <th className="py-2 px-4 text-start">Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-start">
           {reports.map((report) => (
-            <tr key={report._id}>
-              <td className="py-2 px-4 border-b border-gray-300">{report._id}</td>
-              <td className="py-2 px-4 border-b border-gray-300">{report.type}</td>
-              <td className="py-2 px-4 border-b border-gray-300">
+            <tr key={report._id} className="hover:bg-[#123f7b]/10">
+              <td className="py-2 px-4 cursor-pointer" onClick={() => handleCopyToClipboard(report.caseId)}>{report.caseId}</td>
+              <td className="py-2 px-4">{report.type}</td>
+              <td className="py-2 px-4">
                 {report.personInvolved.firstName} {report.personInvolved.lastName}
               </td>
-              <td className="py-2 px-4 border-b border-gray-300">
+              <td className="py-2 px-4">
                 {new Date(report.createdAt).toLocaleString('en-US', {
                   month: 'long',
                   day: 'numeric',
@@ -105,8 +145,13 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
                   hour12: true,
                 })}
               </td>
-              <td className="py-2 px-4 border-b border-gray-300">{report.personInvolved.lastKnownLocation}</td>
-              <td className="py-2 px-4 border-b border-gray-300">
+              <td className="py-2 px-4">{report.personInvolved.lastKnownLocation}</td>
+              <td className="justify-start text-center">
+              <div className="m-2">
+                {getStatusTable(report?.status)}
+              </div>
+              </td>
+              <td className="py-2 px-4">
                 <button onClick={() => handleReportClick(report._id)} className="flex items-center justify-center">
                   <div className="bg-[#123F7B] px-4 py-2 rounded-full shadow-lg">
                     <HiOutlineEye className="text-white w-6 h-6" />
@@ -117,7 +162,7 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
           ))}
         </tbody>
       </table>
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between place-items-center content-center mt-4">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
