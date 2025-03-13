@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReportDetails } from '../redux/actions/reportActions';
-import { FaBroadcastTower, FaEyeSlash, FaEdit, FaMapMarkerAlt, FaUser  } from 'react-icons/fa';
-import { MdOutlineContacts, MdOutlineContactPhone, MdOutlineContactEmergency,MdLocationCity  } from "react-icons/md";
-import { RiPoliceBadgeFill } from "react-icons/ri";
-import { TbSpeakerphone } from "react-icons/tb";
+import { FaBroadcastTower, FaEyeSlash, FaEdit, FaUserTag  } from 'react-icons/fa';
+import { MdOutlineContacts, MdOutlineContactPhone, MdOutlineContactEmergency,MdLocationCity,MdOutlineInvertColors, MdOutlineBloodtype } from "react-icons/md";
+import { RiPoliceBadgeFill, RiUserLocationLine, RiUserCommunityLine, RiEye2Line  } from "react-icons/ri";
+import { GiClothes,GiScarWound, GiMedicines } from "react-icons/gi";
+import { LuFileUser } from "react-icons/lu";
+import { TbSpeakerphone, TbCalendarUser } from "react-icons/tb";
+import { PiGenderIntersexLight } from "react-icons/pi";
 import { IoCopyOutline } from 'react-icons/io5'
 import { BsSendCheck } from "react-icons/bs";
+import { IoMdContacts } from "react-icons/io";
+import { CiCalendarDate } from "react-icons/ci";
+import { HiCalendarDateRange } from "react-icons/hi2";
+import { SiWeightsandbiases } from "react-icons/si";
 import { format } from 'date-fns';
 import {
   Tooltip,
@@ -15,6 +22,12 @@ import {
   TooltipTrigger,
   TooltipProvider
 } from './ui/tooltip';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from './ui/tabs';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -40,6 +53,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   );
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
+  const formattedDateOfbirth = report ? format(new Date(report.personInvolved.dateOfBirth), 'MMMM dd, yyyy') : '';
+  const formattedLastSeenDate = report ? format(new Date(report.personInvolved.lastSeenDate), 'MMMM dd, yyyy') : '';
 
   const handleCopyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -47,6 +62,264 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
     }).catch((err) => {
       console.error('Failed to copy text: ', err);
     });
+  };
+
+  const ReportInfo = () => {
+    return (
+      <div>
+        <div className='flex flex-row place-items-start mt-2'>
+                        <MdOutlineContacts className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.firstName} {report.reporter.lastName}</div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <IoMdContacts className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.personInvolved.relationship}</div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Relationship with the Reporter</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <MdOutlineContactPhone className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='flex flex-row space-x-2'>
+                            <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.number}</div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                  <TooltipTrigger>
+                                  <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.number)} /></TooltipTrigger>
+                                  <TooltipContent>
+                                  <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
+                                  </TooltipContent>
+                              </Tooltip>
+                              </TooltipProvider>
+                          </div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Contact Number</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <MdOutlineContactEmergency className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='flex flex-row space-x-2'>
+                            <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.email}</div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                  <TooltipTrigger>
+                                  <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.email)} /></TooltipTrigger>
+                                  <TooltipContent>
+                                  <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
+                                  </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Email</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <MdLocationCity className="mr-2 text-xl" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.assignedPoliceStation.name}</div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Assigned Police Station</div>
+                        </div>
+                      </div>
+                      {report.assignedOfficer && (
+                        <div className='flex flex-row place-items-start mt-2'>
+                          <RiPoliceBadgeFill className="mr-2 text-lg" />
+                          {renderField('Assigned Officer', `${report.assignedOfficer.firstName} ${report.assignedOfficer.lastName}`)}
+                        </div>
+                      )}
+                      {report.followUp && report.followUp.length > 0 && (
+                        <div className='flex flex-row place-items-start mt-2'>
+                          <RiPoliceBadgeFill className="mr-2 text-lg" />
+                          {renderField('Follow Up', report.followUp)}
+                        </div>
+                      )}
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <TbSpeakerphone className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.broadcastConsent ? 'Yes' : 'No'}</div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Broadcast Consent</div>
+                        </div>
+                      </div>
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <BsSendCheck className="mr-2 text-lg" />
+                        <div className='flex flex-col gap-0'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.isPublished ? 'Yes' : 'No'}</div>
+                          <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Is Published</div>
+                        </div>
+                      </div>
+      </div>   
+    );
+  };
+
+  const PersonalInfo = () => {
+    return(
+      <div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <RiUserLocationLine className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.lastKnownLocation || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Location Last Seen</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <HiCalendarDateRange className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{formattedLastSeenDate} @ {report?.personInvolved?.lastSeentime}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Date & Time Last Seen</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <FaUserTag className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.alias || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Alias</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <TbCalendarUser className="mr-2 text-xl" />
+          <div className='flex flex-row space-x-2'>
+            <div className='flex flex-col gap-0'>
+              <div className='text-md font-semibold text-[#123F7B] '>{report.personInvolved.age}</div>
+              <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Age</div>
+            </div>
+            <div className='flex flex-col gap-0'>|</div>
+            <div className='flex flex-col gap-0'>
+              <div className='text-md font-semibold text-[#123F7B] '>{formattedDateOfbirth}</div>
+              <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Date of birth</div>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <PiGenderIntersexLight className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.gender || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Gender</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <GiClothes className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.lastKnownClothing || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Last Known Clothing</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <MdOutlineContactPhone className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.contactInformation || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Contact Information</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const PhysicalInfo = () => {
+    return(
+      <div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <RiUserCommunityLine className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.race || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Race</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <SiWeightsandbiases className="mr-2 text-xl" />
+          <div className='flex flex-row space-x-2'>
+            <div className='flex flex-col gap-0'>
+              <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.height || 'N/A'}</div>
+              <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Height</div>
+            </div>
+            <div className='flex flex-col gap-0'>|</div>
+            <div className='flex flex-col gap-0'>
+              <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.weight || 'N/A'}</div>
+              <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Weight</div>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <RiEye2Line className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.eyeColor || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Eye Color</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <GiScarWound className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.scarsMarksTattoos || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Scars / Marks / Tattoos</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <MdOutlineInvertColors className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.hairColor || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Hair Color</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <LuFileUser className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.birthDefects || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Birth Defects</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <LuFileUser className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.prosthetics || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Prosthetics</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <MdOutlineBloodtype className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.bloodType || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Blood Type</div>
+          </div>
+        </div>
+        <div className='flex flex-row place-items-start mt-2'>
+          <GiMedicines className="mr-2 text-xl" />
+          <div className='flex flex-col gap-0'>
+            <div className='text-md font-semibold text-[#123F7B] '>{report?.personInvolved?.medications || 'N/A'}</div>
+            <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Medications</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const MediaInfo = () => {
+    return(
+      <div>
+        <div className='flex flex-col place-items-start space-y-2'>
+          <div className='text-sm font-semibold text-[#123F7B]/80'>IMAGES</div>
+          <div className='flex flex-row space-x-2'>
+          <img src={report.personInvolved.mostRecentPhoto?.url || ''} alt="Most Recent Photo" className="w-[200px] h-[200px] rounded-sm mx-2"></img>
+          {report.additionalImages && report.additionalImages.length > 0 ? (
+            report.additionalImages.map((image, index) => (
+              <img key={index} src={image?.url} alt={`Additional Image ${index + 1}`} className="w-[200px] h-[200px] rounded-sm mx-2" />
+            ))
+          ) : (
+            <p className='mx-2'>No Additional Images</p>
+          )}
+          </div>
+          <div className='text-sm font-semibold text-[#123F7B]/80'>VIDEO</div>
+          <div className='flex flex-row space-x-2'>
+          {report.video ? (
+            <video src={report.video?.url || ''} alt="video" className="w-[400px] h-[400px] rounded-sm mx-2"></video>
+          ) : (
+            <p className='mx-2'>No Video</p>
+          )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -98,92 +371,42 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     </div>
                   </div>
                   <div className='px-1'>
-                    <div className='text-xs font-semibold text-[#123F7B]/80'>
-                    REPORT INFORMATION
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <FaMapMarkerAlt className="mr-2 text-xl" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-md font-semibold text-[#123F7B] '>{report.personInvolved.lastKnownLocation}</div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Last Known Location</div>
-                      </div>
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <MdOutlineContacts className="mr-2 text-lg" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.firstName} {report.reporter.lastName}</div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter</div>
-                      </div>
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <MdOutlineContactPhone className="mr-2 text-lg" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='flex flex-row space-x-2'>
-                          <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.number}</div>
-                          <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.number)} /></TooltipTrigger>
-                                <TooltipContent>
-                                <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
-                                </TooltipContent>
-                            </Tooltip>
-                            </TooltipProvider>
+                    <Tabs defaultValue="reportinfo">
+                      <TabsList>
+                      <TabsTrigger value='reportinfo'>
+                        <div className='text-xs font-semibold text-[#123F7B]/80'>
+                        REPORT
                         </div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Contact Number</div>
-                      </div>
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <MdOutlineContactEmergency className="mr-2 text-lg" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='flex flex-row space-x-2'>
-                          <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.email}</div>
-                          <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.email)} /></TooltipTrigger>
-                                <TooltipContent>
-                                <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
-                                </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                      </TabsTrigger>
+                      <TabsTrigger value='personalinfo'>
+                        <div className='text-xs font-semibold text-[#123F7B]/80'>
+                        PERSONAL
                         </div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Email</div>
-                      </div>
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <MdLocationCity className="mr-2 text-xl" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-md font-semibold text-[#123F7B] '>{report.assignedPoliceStation.name}</div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Assigned Police Station</div>
-                      </div>
-                    </div>
-                    {report.assignedOfficer && (
-                      <div className='flex flex-row place-items-start mt-2'>
-                        <RiPoliceBadgeFill className="mr-2 text-lg" />
-                        {renderField('Assigned Officer', `${report.assignedOfficer.firstName} ${report.assignedOfficer.lastName}`)}
-                      </div>
-                    )}
-                    {report.followUp && report.followUp.length > 0 && (
-                      <div className='flex flex-row place-items-start mt-2'>
-                        <RiPoliceBadgeFill className="mr-2 text-lg" />
-                        {renderField('Follow Up', report.followUp)}
-                      </div>
-                    )}
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <TbSpeakerphone className="mr-2 text-lg" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-md font-semibold text-[#123F7B] '>{report.broadcastConsent ? 'Yes' : 'No'}</div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Broadcast Consent</div>
-                      </div>
-                    </div>
-                    <div className='flex flex-row place-items-start mt-2'>
-                      <BsSendCheck className="mr-2 text-lg" />
-                      <div className='flex flex-col gap-0'>
-                        <div className='text-md font-semibold text-[#123F7B] '>{report.isPublished ? 'Yes' : 'No'}</div>
-                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Is Published</div>
-                      </div>
-                    </div>
+                      </TabsTrigger>
+                      <TabsTrigger value='physicalinfo'>
+                        <div className='text-xs font-semibold text-[#123F7B]/80'>
+                        PHYSICAL
+                        </div>
+                      </TabsTrigger>
+                      <TabsTrigger value='mediaInfo'>
+                        <div className='text-xs font-semibold text-[#123F7B]/80'>
+                        MEDIA
+                        </div>
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value='reportinfo'>
+                      <ReportInfo />
+                    </TabsContent>
+                    <TabsContent value='personalinfo'>
+                      <PersonalInfo/>
+                    </TabsContent>
+                    <TabsContent value='physicalinfo'>
+                      <PhysicalInfo/>
+                    </TabsContent>
+                    <TabsContent value='mediaInfo'>
+                      <MediaInfo/>
+                    </TabsContent>
+                  </Tabs>
                   </div>
                 </div>
               </div>
