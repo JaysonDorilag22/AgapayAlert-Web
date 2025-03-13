@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { HiOutlineEye } from "react-icons/hi2";
 import { extractUniqueValues } from "@/utils/extractUniqueValues";
 import ReportDetailsModal from "@/components/ReportDetailsModal";
-import { FaSearch } from "react-icons/fa";
 
 const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilterChange, onSearchChange }) => {
   const [search, setSearch] = useState('');
@@ -98,7 +97,7 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
             <FaSearch />
           </button>
         </form> */}
-        <select value={status} onChange={handleStatusChange} className="border border-[#123f7B] rounded-lg px-4 py-2">
+        <select value={status} onChange={handleStatusChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
           <option value="">All Statuses</option>
           {statusOptions.map((statusOption) => (
             <option key={statusOption} value={statusOption}>
@@ -106,8 +105,8 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
             </option>
           ))}
         </select>
-        <select value={type} onChange={handleTypeChange} className="border border-[#123f7B] rounded-lg px-4 py-2">
-          <option value="">All Types</option>
+        <select value={type} onChange={handleTypeChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
+          <option value="" className="">All Types</option>
           {typeOptions.map((typeOption) => (
             <option key={typeOption} value={typeOption}>
               {typeOption}

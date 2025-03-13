@@ -2,8 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReportDetails } from '../redux/actions/reportActions';
-import { FaBroadcastTower, FaEyeSlash, FaEdit, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
+import { FaBroadcastTower, FaEyeSlash, FaEdit, FaMapMarkerAlt, FaUser  } from 'react-icons/fa';
+import { MdOutlineContacts, MdOutlineContactPhone, MdOutlineContactEmergency,MdLocationCity  } from "react-icons/md";
+import { RiPoliceBadgeFill } from "react-icons/ri";
+import { TbSpeakerphone } from "react-icons/tb";
+import { IoCopyOutline } from 'react-icons/io5'
+import { BsSendCheck } from "react-icons/bs";
 import { format } from 'date-fns';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from './ui/tooltip';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -29,6 +40,14 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   );
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
+
+  const handleCopyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('Copied to clipboard: ', text);
+    }).catch((err) => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
 
   return (
     <Dialog open={!!reportId} onOpenChange={onClose}>
@@ -69,65 +88,101 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                 </div>
               </div>
               <div className='col-start-2 col-end-4'>
-                <div className='flex flex-col'>
-                  <div className='text-3xl font-bold'>
-                  {report.personInvolved.firstName} {report.personInvolved.lastName}
-                  </div>
-                  <div className='text-sm font-medium my-2 text-[#123F7B]/60'>
-                  Date & Time Reported: {formattedDate}
-                  </div>
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaMapMarkerAlt className="mr-2 text-xl" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.personInvolved.lastKnownLocation}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Last Known Location</div>
+                <div className='flex flex-col space-y-4'>
+                  <div className='-space-y-0'>
+                    <div className='text-3xl font-bold'>
+                    {report.personInvolved.firstName} {report.personInvolved.lastName}
+                    </div>
+                    <div className='text-sm font-medium my-2 text-[#123F7B]/60'>
+                    Date & Time Reported: {formattedDate}
                     </div>
                   </div>
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaUser className="mr-2 text-lg" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.firstName} {report.reporter.lastName}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter</div>
+                  <div className='px-1'>
+                    <div className='text-xs font-semibold text-[#123F7B]/80'>
+                    REPORT INFORMATION
                     </div>
-                  </div>
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaUser className="mr-2 text-lg" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.number}, {report.reporter.email}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Contact</div>
-                    </div>
-                  </div>
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaMapMarkerAlt className="mr-2 text-xl" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.assignedPoliceStation.name}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Assigned Police Station</div>
-                    </div>
-                  </div>
-                  {report.assignedOfficer && (
                     <div className='flex flex-row place-items-start mt-2'>
-                      <FaUser className="mr-2 text-lg" />
-                      {renderField('Assigned Officer', `${report.assignedOfficer.firstName} ${report.assignedOfficer.lastName}`)}
+                      <FaMapMarkerAlt className="mr-2 text-xl" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-md font-semibold text-[#123F7B] '>{report.personInvolved.lastKnownLocation}</div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Last Known Location</div>
+                      </div>
                     </div>
-                  )}
-                  {report.followUp && report.followUp.length > 0 && (
                     <div className='flex flex-row place-items-start mt-2'>
-                      <FaUser className="mr-2 text-lg" />
-                      {renderField('Follow Up', report.followUp)}
+                      <MdOutlineContacts className="mr-2 text-lg" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.firstName} {report.reporter.lastName}</div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter</div>
+                      </div>
                     </div>
-                  )}
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaUser className="mr-2 text-lg" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.broadcastConsent ? 'Yes' : 'No'}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Broadcast Consent</div>
+                    <div className='flex flex-row place-items-start mt-2'>
+                      <MdOutlineContactPhone className="mr-2 text-lg" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='flex flex-row space-x-2'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.number}</div>
+                          <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.number)} /></TooltipTrigger>
+                                <TooltipContent>
+                                <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            </TooltipProvider>
+                        </div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Contact Number</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className='flex flex-row place-items-start mt-2'>
-                    <FaUser className="mr-2 text-lg" />
-                    <div className='flex flex-col gap-0'>
-                      <div className='text-md font-semibold text-[#123F7B] '>{report.isPublished ? 'Yes' : 'No'}</div>
-                      <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Is Published</div>
+                    <div className='flex flex-row place-items-start mt-2'>
+                      <MdOutlineContactEmergency className="mr-2 text-lg" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='flex flex-row space-x-2'>
+                          <div className='text-md font-semibold text-[#123F7B] '>{report.reporter.email}</div>
+                          <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                <IoCopyOutline className='text-[#123F7B] text-md cursor-pointer' onClick={() => handleCopyToClipboard(report.reporter.email)} /></TooltipTrigger>
+                                <TooltipContent>
+                                <p className='text-[#123F7B] text-xs font-light'>Copy to clipboard</p>
+                                </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Reporter Email</div>
+                      </div>
+                    </div>
+                    <div className='flex flex-row place-items-start mt-2'>
+                      <MdLocationCity className="mr-2 text-xl" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-md font-semibold text-[#123F7B] '>{report.assignedPoliceStation.name}</div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Assigned Police Station</div>
+                      </div>
+                    </div>
+                    {report.assignedOfficer && (
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <RiPoliceBadgeFill className="mr-2 text-lg" />
+                        {renderField('Assigned Officer', `${report.assignedOfficer.firstName} ${report.assignedOfficer.lastName}`)}
+                      </div>
+                    )}
+                    {report.followUp && report.followUp.length > 0 && (
+                      <div className='flex flex-row place-items-start mt-2'>
+                        <RiPoliceBadgeFill className="mr-2 text-lg" />
+                        {renderField('Follow Up', report.followUp)}
+                      </div>
+                    )}
+                    <div className='flex flex-row place-items-start mt-2'>
+                      <TbSpeakerphone className="mr-2 text-lg" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-md font-semibold text-[#123F7B] '>{report.broadcastConsent ? 'Yes' : 'No'}</div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Broadcast Consent</div>
+                      </div>
+                    </div>
+                    <div className='flex flex-row place-items-start mt-2'>
+                      <BsSendCheck className="mr-2 text-lg" />
+                      <div className='flex flex-col gap-0'>
+                        <div className='text-md font-semibold text-[#123F7B] '>{report.isPublished ? 'Yes' : 'No'}</div>
+                        <div className='text-xs font-extralight text-[#123F7B]/60 italic'>Is Published</div>
+                      </div>
                     </div>
                   </div>
                 </div>
