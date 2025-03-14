@@ -1,12 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import tilewhite from '../../assets/tilelogowhite.png';
 import tileblue from '../../assets/tilelogoblue.png';
-import { FiHome } from "react-icons/fi";
-import { IoDocumentOutline } from "react-icons/io5";
-import { IoSettingsOutline } from "react-icons/io5";
-import { IoLogOutOutline } from "react-icons/io5";
 import { IoLocationOutline } from "react-icons/io5";
 import { IoCalendarClearOutline } from "react-icons/io5";
 import { IoCopyOutline } from "react-icons/io5";

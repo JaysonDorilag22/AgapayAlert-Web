@@ -3,9 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Notifications from './Notifications';
 import Profile from './Profile';
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
-import { Separator } from '../components/ui/Separator';
 import { logout } from '@/redux/actions/authActions';
 
 

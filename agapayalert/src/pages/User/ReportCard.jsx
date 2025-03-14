@@ -1,19 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import tilewhite from '../../assets/tilelogowhite.png';
 import tileblue from '../../assets/tilelogoblue.png';
-import { IoLocationOutline } from "react-icons/io5";
-import { IoCalendarClearOutline } from "react-icons/io5";
-import { IoCopyOutline } from "react-icons/io5";
 import { GoClock } from "react-icons/go";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../components/ui/tooltip";
-import { formatDateToMonthYear } from '../../utils/dateUtils';
 import ProfileLayout from '@/layouts/ProfileLayout';
 
 const ReportCard = () => {

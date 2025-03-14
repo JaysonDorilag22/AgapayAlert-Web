@@ -1,6 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import logo from "../assets/AGAPAYALERT.svg";
 import mobileMU from "../assets/mobileappMU.svg";
 import { RxArrowRight } from "react-icons/rx";
 import { FaStar } from 'react-icons/fa';
