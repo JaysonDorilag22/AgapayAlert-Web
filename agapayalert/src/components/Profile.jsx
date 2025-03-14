@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
-import { Separator } from '../components/ui/Separator';
+import { Separator } from '../components/ui/separator';
 import { logout } from '../redux/actions/authActions';
 import { getRoleDisplayName } from '@/utils/userroles';
 
