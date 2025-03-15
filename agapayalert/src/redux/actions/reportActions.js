@@ -449,6 +449,7 @@ export const getReportDetails = (reportId) => async (dispatch) => {
       type: GET_REPORT_DETAILS_SUCCESS,
       payload: data.data
     });
+    console.log('rDataaa:', data);
 
     return { success: true, data: data.data };
   } catch (error) {

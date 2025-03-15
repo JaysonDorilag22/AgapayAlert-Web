@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReportDetails } from '../redux/actions/reportActions';
+import { getFinderReportsByReportId } from '@/redux/actions/finderActions';
 import { FaBroadcastTower, FaEyeSlash, FaEdit  } from 'react-icons/fa';
 import {
   Tabs,
@@ -19,6 +20,7 @@ import { FinderInfo } from './ReportDetails/FinderInfo';
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
   const [report, setReport] = useState(null);
+  const [finderReports, setFinderReports] = useState([null]);
 
   useEffect(() => {
     const fetchReportDetails = async () => {
@@ -30,6 +32,22 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
     };
 
     fetchReportDetails();
+  }, [dispatch, reportId]);
+
+  useEffect(() => {
+    const fetchFinderReports = async () => {
+      const result = await dispatch(getFinderReportsByReportId(reportId));
+      if (result.success) {
+        setFinderReports(result.data);
+        console.log('Finder Reports:', result);
+      }
+      else if (result.error) {
+        console.log('Error REPORT:', result.error);
+      }
+
+    };
+
+    fetchFinderReports();
   }, [dispatch, reportId]);
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
@@ -151,7 +169,7 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                       <MediaInfo report={report}/>
                     </TabsContent>
                     <TabsContent value='FinderInfo'>
-                      <FinderInfo />
+                      <FinderInfo finderReports={finderReports} />
                     </TabsContent>
                   </Tabs>
                   </div>

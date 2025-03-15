@@ -7,6 +7,7 @@ import { userReducer } from './reducers/userReducer';
 import { reportReducer } from './reducers/reportReducer';
 import { dashboardReducer } from './reducers/dashboardReducer';
 import { broadcastReducer } from './reducers/broadcastReducer';
+import { finderReducer } from './reducers/finderReducer';
 
 const token = localStorage.getItem('token');
 console.log("token: ", token);
@@ -21,7 +22,8 @@ const store = configureStore({
     user: userReducer,
     reports: reportReducer,
     dashboard: dashboardReducer,
-    broadcast: broadcastReducer
+    broadcast: broadcastReducer,
+    finder: finderReducer,
   }
 
 });
