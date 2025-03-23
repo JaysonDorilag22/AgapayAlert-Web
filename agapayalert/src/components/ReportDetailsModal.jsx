@@ -20,7 +20,7 @@ import { FinderInfo } from './ReportDetails/FinderInfo';
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
   const [report, setReport] = useState(null);
-  const [finderReports, setFinderReports] = useState([null]);
+  const [finderReports, setFinderReports] = useState([]);
 
   useEffect(() => {
     const fetchReportDetails = async () => {
@@ -39,12 +39,10 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
       const result = await dispatch(getFinderReportsByReportId(reportId));
       if (result.success) {
         setFinderReports(result.data);
-        console.log('Finder Reports:', result);
-      }
-      else if (result.error) {
+        console.log('Finder Reports:', result.data);
+      } else if (result.error) {
         console.log('Error REPORT:', result.error);
       }
-
     };
 
     fetchFinderReports();
@@ -105,7 +103,6 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                       <FaEyeSlash className="" />
                       </button>
                     )}
-
                   </div>
                   <div className='m-4'>
                     <p className='text-[#D46A79]/70 text-lg font-semibold'>{report.type} Person</p>
@@ -176,7 +173,6 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                 </div>
               </div>
             </div>
-            
           </div>
         ) : (
           <p>Loading...</p>

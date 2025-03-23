@@ -78,27 +78,23 @@ export const createReport = (reportData) => async (dispatch) => {
 };
 
 // In reportActions.js
-export const getReports = ({ page = 1, limit = 10, status = null, type = null, search = '', startDate = null, endDate = null }) => async (dispatch) => {
+export const getReports = (params = {}) => async (dispatch) => {
   try {
     dispatch({ type: GET_REPORTS_REQUEST });
 
-    // Build query parameters properly
     const queryParams = new URLSearchParams({
-      page,
-      limit,
-      ...(status && { status }),
-      ...(type && { type }),
-      ...(search && { search }),
-      ...(startDate && { startDate }),
-      ...(endDate && { endDate })
-    });
+      page: params.page || 1,
+      limit: params.limit || 10,
+      ...(params.type && { type: params.type }),
+      ...(params.query && { query: params.query }) // Add search query support
+    }).toString();
 
-    const url = `${server}/report/getReports?${queryParams.toString()}`;
+    const url = `${server}/report/getReports?${queryParams}`;
 
-    console.log('url', url);
     const { data } = await axios.get(url, {
       withCredentials: true
     });
+    console.log('data: ', data);
 
     dispatch({
       type: GET_REPORTS_SUCCESS,
@@ -107,18 +103,19 @@ export const getReports = ({ page = 1, limit = 10, status = null, type = null, s
         currentPage: parseInt(data.data.currentPage),
         totalPages: parseInt(data.data.totalPages),
         totalReports: parseInt(data.data.totalReports),
-        hasMore: data.data.hasMore
+        hasMore: data.data.hasMore,
+        isNewSearch: params.page === 1
       }
     });
 
     return { success: true, data: data.data };
   } catch (error) {
+    const message = error.response?.data?.msg || error.message;
     dispatch({
       type: GET_REPORTS_FAIL,
-      payload: error.response?.data?.msg || error.message
+      payload: message
     });
-    console.log(error)
-    return { success: false, error: error.response?.data?.msg || error.message };
+    return { success: false, error: message };
   }
 };
 
