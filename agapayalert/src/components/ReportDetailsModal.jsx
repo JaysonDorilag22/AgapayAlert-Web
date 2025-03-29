@@ -10,6 +10,12 @@ import {
   TabsList,
   TabsTrigger,
 } from './ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 import { format } from 'date-fns';
 import { ReportInfo } from './ReportDetails/ReportInfo';
 import { PersonalInfo } from './ReportDetails/PersonalInfo';
@@ -21,6 +27,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
   const [report, setReport] = useState(null);
   const [finderReports, setFinderReports] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [broadcastMessage, setBroadcastMessage] = useState('');
 
   useEffect(() => {
     const fetchReportDetails = async () => {
@@ -47,6 +55,24 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
 
     fetchFinderReports();
   }, [dispatch, reportId]);
+
+  const handleBroadcast = async () => {
+    if (!broadcastMessage.trim()) {
+      alert('Please enter a broadcast message.');
+      return;
+    }
+
+    setLoading(true);
+    const result = await dispatch(publishBroadcast(reportId, { message: broadcastMessage }));
+    setLoading(false);
+
+    if (result.success) {
+      alert('Broadcast published successfully!');
+      setBroadcastMessage(''); // Clear the message input
+    } else {
+      alert(`Failed to publish broadcast: ${result.error}`);
+    }
+  };
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
 
@@ -95,13 +121,36 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     {getStatusTable(report.status)}
                   </div>
                   <div className="flex flex-row justify-between mt-4 text-md gap-4">
-                    <button className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg">
-                    <FaBroadcastTower className="" />
-                    </button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <button
+                            className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg"
+                            onClick={handleBroadcast}
+                            disabled={loading}
+                          >
+                            <FaBroadcastTower className="" />
+                            {loading ? ' Broadcasting...' : ''}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className='text-xs font-light text-[#123f7b]'>Click to broadcast report</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     {report.isPublished && (
-                      <button className="bg-[#D46A79] text-white px-4 py-2 rounded-xl flex items-center shadow-lg">
-                      <FaEyeSlash className="" />
-                      </button>
+                      <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                        <button className="bg-[#D46A79] text-white p-4 rounded-xl flex items-center shadow-lg">
+                          <FaEyeSlash className="" />
+                        </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className='text-xs font-light text-[#123f7b]'>Click to hide report</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     )}
                   </div>
                   <div className='m-4'>
