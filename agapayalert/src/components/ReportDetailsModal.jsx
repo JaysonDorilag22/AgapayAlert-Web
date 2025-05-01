@@ -16,12 +16,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+
 import { format } from 'date-fns';
 import { ReportInfo } from './ReportDetails/ReportInfo';
 import { PersonalInfo } from './ReportDetails/PersonalInfo';
 import { PhysicalInfo } from './ReportDetails/PhysicalInfo';
 import { MediaInfo } from './ReportDetails/MediaInfo';
 import { FinderInfo } from './ReportDetails/FinderInfo';
+import BroadcastReport  from './ReportDetails/BroadcastReport';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -29,6 +31,15 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [finderReports, setFinderReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [broadcastMessage, setBroadcastMessage] = useState('');
+  const [selectedReportId, setSelectedReportId] = useState(null);
+
+  const handleBroadcastClick = (reportId) => {
+    setSelectedReportId(reportId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedReportId(null);
+  };
 
   useEffect(() => {
     const fetchReportDetails = async () => {
@@ -73,6 +84,7 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
       alert(`Failed to publish broadcast: ${result.error}`);
     }
   };
+    
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
 
@@ -126,7 +138,7 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                         <TooltipTrigger>
                           <button
                             className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg"
-                            onClick={handleBroadcast}
+                            onClick={() => handleBroadcastClick(report._id)}
                             disabled={loading}
                           >
                             <FaBroadcastTower className="" />
@@ -173,6 +185,7 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     Date & Time Reported: {formattedDate}
                     </div>
                   </div>
+                  { !selectedReportId ? (
                   <div className='px-1'>
                     <Tabs defaultValue="reportinfo">
                       <TabsList>
@@ -218,7 +231,9 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                       <FinderInfo finderReports={finderReports} />
                     </TabsContent>
                   </Tabs>
-                  </div>
+                  </div> ): (
+                  <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
+                  )}
                 </div>
               </div>
             </div>
