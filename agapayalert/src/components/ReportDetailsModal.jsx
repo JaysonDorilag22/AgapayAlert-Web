@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReportDetails } from '../redux/actions/reportActions';
 import { getFinderReportsByReportId } from '@/redux/actions/finderActions';
+import { unpublishBroadcast } from '@/redux/actions/broadcastActions';
 import { FaBroadcastTower, FaEyeSlash, FaEdit  } from 'react-icons/fa';
 import {
   Tabs,
@@ -30,7 +31,6 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [report, setReport] = useState(null);
   const [finderReports, setFinderReports] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [broadcastMessage, setBroadcastMessage] = useState('');
   const [selectedReportId, setSelectedReportId] = useState(null);
 
   const handleBroadcastClick = (reportId) => {
@@ -39,6 +39,22 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
 
   const handleCloseModal = () => {
     setSelectedReportId(null);
+  };
+
+  const handleUnpublish = async () => {
+    setLoading(true);
+    const result = await dispatch(unpublishBroadcast(reportId)); // Call unpublishBroadcast action
+    setLoading(false);
+
+    if (result.success) {
+      alert('Broadcast unpublished successfully!');
+      const updatedReport = await dispatch(getReportDetails(reportId)); // Refresh report details
+      if (updatedReport.success) {
+        setReport(updatedReport.data);
+      }
+    } else {
+      alert(`Failed to unpublish broadcast: ${result.error}`);
+    }
   };
 
   useEffect(() => {
@@ -139,10 +155,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                           <button
                             className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg"
                             onClick={() => handleBroadcastClick(report._id)}
-                            disabled={loading}
                           >
                             <FaBroadcastTower className="" />
-                            {loading ? ' Broadcasting...' : ''}
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -154,9 +168,13 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                       <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
-                        <button className="bg-[#D46A79] text-white p-4 rounded-xl flex items-center shadow-lg">
-                          <FaEyeSlash className="" />
-                        </button>
+                          <button
+                            className="bg-[#D46A79] text-white p-4 rounded-xl flex items-center shadow-lg"
+                            onClick={handleUnpublish} // Call handleUnpublish on click
+                            disabled={loading}
+                          >
+                            <FaEyeSlash className="" />
+                          </button>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className='text-xs font-light text-[#123f7b]'>Click to hide report</p>

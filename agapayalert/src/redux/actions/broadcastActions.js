@@ -23,6 +23,8 @@ export const publishBroadcast = (reportId, broadcastData) => async (dispatch) =>
       { withCredentials: true }
     );
 
+    console.log('Publish broadcast response:', data); // Debugging line
+
     dispatch({
       type: PUBLISH_BROADCAST_SUCCESS,
       payload: data
@@ -35,6 +37,7 @@ export const publishBroadcast = (reportId, broadcastData) => async (dispatch) =>
       type: PUBLISH_BROADCAST_FAILURE,
       payload: message
     });
+    console.error('Error publishing broadcast:', message); // Debugging line
     return { success: false, error: message };
   }
 };
