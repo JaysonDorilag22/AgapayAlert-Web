@@ -81,6 +81,7 @@ export const BroadcastReport = ({ reportId, onClose, onSubmit }) => {
 
     if (result.success) {
       alert('Broadcast sent successfully!');
+      onClose();
     } else {
       alert(`Failed to send broadcast: ${result.error}`);
       alert(`Failed to send broadcast: ${broadcastType} ${scope}`);

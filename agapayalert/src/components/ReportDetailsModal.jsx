@@ -25,6 +25,7 @@ import { PhysicalInfo } from './ReportDetails/PhysicalInfo';
 import { MediaInfo } from './ReportDetails/MediaInfo';
 import { FinderInfo } from './ReportDetails/FinderInfo';
 import BroadcastReport  from './ReportDetails/BroadcastReport';
+import UpdateStatusReport from './ReportDetails/UpdateStatusReport';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -32,9 +33,20 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [finderReports, setFinderReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
+  const [showUpdateStatus, setShowUpdateStatus] = useState(false); // State to toggle UpdateStatusReport
 
   const handleBroadcastClick = (reportId) => {
     setSelectedReportId(reportId);
+    setShowUpdateStatus(false); // Close UpdateStatusReport
+  };
+
+  const handleUpdateStatusClick = () => {
+    setShowUpdateStatus(true); // Show UpdateStatusReport
+    setSelectedReportId(null); // Reset selected report ID
+  };
+
+  const handleCloseUpdateStatus = () => {
+    setShowUpdateStatus(false); // Close UpdateStatusReport
   };
 
   const handleCloseModal = () => {
@@ -82,25 +94,6 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
 
     fetchFinderReports();
   }, [dispatch, reportId]);
-
-  const handleBroadcast = async () => {
-    if (!broadcastMessage.trim()) {
-      alert('Please enter a broadcast message.');
-      return;
-    }
-
-    setLoading(true);
-    const result = await dispatch(publishBroadcast(reportId, { message: broadcastMessage }));
-    setLoading(false);
-
-    if (result.success) {
-      alert('Broadcast published successfully!');
-      setBroadcastMessage(''); // Clear the message input
-    } else {
-      alert(`Failed to publish broadcast: ${result.error}`);
-    }
-  };
-    
 
   const formattedDate = report ? format(new Date(report.createdAt), 'MMMM dd, yyyy @ hh:mm a') : '';
 
@@ -187,9 +180,10 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     <p className='text-[#D46A79]/70 text-lg font-semibold'>{report.type} Person</p>
                   </div>
                   <div className='m-4 text-sm font-light'>
-                  <button className="bg-[#123F7B] text-white px-8 py-4 rounded-full flex items-center shadow-lg">
-                    <FaEdit className="mr-1"/> Update Status
-                    </button>
+                    <button className="bg-[#123F7B] text-white px-8 py-4 rounded-full flex items-center shadow-lg"
+                    onClick={handleUpdateStatusClick}>
+                      <FaEdit className="mr-1"/> Update Status
+                      </button>
                   </div>
                 </div>
               </div>
@@ -203,54 +197,65 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     Date & Time Reported: {formattedDate}
                     </div>
                   </div>
-                  { !selectedReportId ? (
-                  <div className='px-1'>
-                    <Tabs defaultValue="reportinfo">
-                      <TabsList>
-                      <TabsTrigger value='reportinfo'>
-                        <div className='text-xs font-semibold text-[#123F7B]/80'>
-                        REPORT
-                        </div>
-                      </TabsTrigger>
-                      <TabsTrigger value='personalinfo'>
-                        <div className='text-xs font-semibold text-[#123F7B]/80'>
-                        PERSONAL
-                        </div>
-                      </TabsTrigger>
-                      <TabsTrigger value='physicalinfo'>
-                        <div className='text-xs font-semibold text-[#123F7B]/80'>
-                        PHYSICAL
-                        </div>
-                      </TabsTrigger>
-                      <TabsTrigger value='mediaInfo'>
-                        <div className='text-xs font-semibold text-[#123F7B]/80'>
-                        MEDIA
-                        </div>
-                      </TabsTrigger>
-                      <TabsTrigger value='FinderInfo'>
-                        <div className='text-xs font-semibold text-[#123F7B]/80'>
-                        WITNESS REPORTS
-                        </div>
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value='reportinfo'>
-                      <ReportInfo report={report} />
-                    </TabsContent>
-                    <TabsContent value='personalinfo'>
-                      <PersonalInfo report={report}/>
-                    </TabsContent>
-                    <TabsContent value='physicalinfo'>
-                      <PhysicalInfo report={report}/>
-                    </TabsContent>
-                    <TabsContent value='mediaInfo'>
-                      <MediaInfo report={report}/>
-                    </TabsContent>
-                    <TabsContent value='FinderInfo'>
-                      <FinderInfo finderReports={finderReports} />
-                    </TabsContent>
-                  </Tabs>
-                  </div> ): (
-                  <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
+                  {!selectedReportId && !showUpdateStatus ? (
+                    <div className='px-1'>
+                      <Tabs defaultValue="reportinfo">
+                        <TabsList>
+                          <TabsTrigger value='reportinfo'>
+                            <div className='text-xs font-semibold text-[#123F7B]/80'>
+                              REPORT
+                            </div>
+                          </TabsTrigger>
+                          <TabsTrigger value='personalinfo'>
+                            <div className='text-xs font-semibold text-[#123F7B]/80'>
+                              PERSONAL
+                            </div>
+                          </TabsTrigger>
+                          <TabsTrigger value='physicalinfo'>
+                            <div className='text-xs font-semibold text-[#123F7B]/80'>
+                              PHYSICAL
+                            </div>
+                          </TabsTrigger>
+                          <TabsTrigger value='mediaInfo'>
+                            <div className='text-xs font-semibold text-[#123F7B]/80'>
+                              MEDIA
+                            </div>
+                          </TabsTrigger>
+                          <TabsTrigger value='FinderInfo'>
+                            <div className='text-xs font-semibold text-[#123F7B]/80'>
+                              WITNESS REPORTS
+                            </div>
+                          </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value='reportinfo'>
+                          <ReportInfo report={report} />
+                        </TabsContent>
+                        <TabsContent value='personalinfo'>
+                          <PersonalInfo report={report} />
+                        </TabsContent>
+                        <TabsContent value='physicalinfo'>
+                          <PhysicalInfo report={report} />
+                        </TabsContent>
+                        <TabsContent value='mediaInfo'>
+                          <MediaInfo report={report} />
+                        </TabsContent>
+                        <TabsContent value='FinderInfo'>
+                          <FinderInfo finderReports={finderReports} />
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+                  ) : showUpdateStatus ? (
+                    <UpdateStatusReport
+                      onClose={handleCloseUpdateStatus} // Close UpdateStatusReport
+                      currentStatus={report.status} // Pass current status
+                      onSubmit={(updatedStatus) => {
+                        // Handle status update logic here
+                        console.log('Updated Status:', updatedStatus);
+                        handleCloseUpdateStatus();
+                      }}
+                    />
+                  ) : (
+                    <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
                   )}
                 </div>
               </div>
