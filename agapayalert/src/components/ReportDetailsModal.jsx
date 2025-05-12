@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { getReportDetails } from '../redux/actions/reportActions';
+import { getReportDetails, updateUserReport } from '../redux/actions/reportActions';
 import { getFinderReportsByReportId } from '@/redux/actions/finderActions';
 import { unpublishBroadcast } from '@/redux/actions/broadcastActions';
 import { FaBroadcastTower, FaEyeSlash, FaEdit  } from 'react-icons/fa';
@@ -45,7 +45,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
     setSelectedReportId(null); // Reset selected report ID
   };
 
-  const handleCloseUpdateStatus = () => {
+  const handleUpdateStatus = async (updateData) => {
+    const result = await dispatch(updateUserReport(reportId, updateData));
     setShowUpdateStatus(false); // Close UpdateStatusReport
   };
 
@@ -247,12 +248,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                   ) : showUpdateStatus ? (
                     <UpdateStatusReport
                       onClose={handleCloseUpdateStatus} // Close UpdateStatusReport
-                      currentStatus={report.status} // Pass current status
-                      onSubmit={(updatedStatus) => {
-                        // Handle status update logic here
-                        console.log('Updated Status:', updatedStatus);
-                        handleCloseUpdateStatus();
-                      }}
+                      onSubmit={handleUpdateStatus}
+                      currentStatus={currentReport?.status}
                     />
                   ) : (
                     <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
