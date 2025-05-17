@@ -4,6 +4,7 @@ import { FiHome } from "react-icons/fi";
 import { IoDocumentOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
+import { CgProfile } from "react-icons/cg";
 
 const SideBar = () => {
 
@@ -12,6 +13,7 @@ const SideBar = () => {
           <div className='flex flex-col justify-between h-full'>
           <div className='flex flex-col space-y-[25px]'>
           <Link to='/'><FiHome className='text-[#123F7B] text-4xl hover:text-[#D46A79]'/></Link>
+          <Link to='/profile'><CgProfile className='text-[#123F7B] text-4xl hover:text-[#D46A79]'/></Link>
           <Link to='/profile/report'><IoDocumentOutline className='text-[#123F7B] text-4xl hover:text-[#D46A79]'/></Link>
             <IoSettingsOutline className='text-[#123F7B] text-4xl'/>
           </div>

@@ -26,6 +26,7 @@ import { MediaInfo } from './ReportDetails/MediaInfo';
 import { FinderInfo } from './ReportDetails/FinderInfo';
 import BroadcastReport  from './ReportDetails/BroadcastReport';
 import UpdateStatusReport from './ReportDetails/UpdateStatusReport';
+import { redirect } from 'react-router-dom';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -34,6 +35,30 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [showUpdateStatus, setShowUpdateStatus] = useState(false); // State to toggle UpdateStatusReport
+  const [localError, setLocalError] = useState(null);
+
+  useEffect(() => {
+  loadReportDetails();
+}, [dispatch, reportId]);
+
+const loadReportDetails = async (showLoadingState = true) => {
+  try {
+    if (localError) setLocalError(null);
+    if (showLoadingState) setLoading(true);
+    const result = await dispatch(getReportDetails(reportId));
+    if (showLoadingState) setLoading(false);
+    if (result.success) {
+      setReport(result.data);
+    } else {
+      setLocalError(result.error || "Failed to load report details");
+    }
+  } catch (error) {
+    if (showLoadingState) setLoading(false);
+    console.error("Error loading details:", error);
+    setLocalError("Network or server error. Please try again.");
+  }
+};
+
 
   const handleBroadcastClick = (reportId) => {
     setSelectedReportId(reportId);
@@ -45,10 +70,23 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
     setSelectedReportId(null); // Reset selected report ID
   };
 
-  const handleUpdateStatus = async (updateData) => {
-    const result = await dispatch(updateUserReport(reportId, updateData));
-    setShowUpdateStatus(false); // Close UpdateStatusReport
-  };
+const handleCloseUpdateStatus = async (updateData) => {
+  // updateData: { status, followUp }
+  console.log('ReportID & Update Data:', reportId, updateData);
+  setLoading(true);
+  const result = await dispatch(updateUserReport(reportId, updateData));
+  setLoading(false);
+  setShowUpdateStatus(false);
+  if (result.success) {
+    
+    // Refresh report details using the new loadReportDetails function
+    await loadReportDetails(true);
+    setSelectedReportId(null); // Reset selected report ID
+     // Redirect to the report details page
+  } else {
+    alert(result.error || "Update failed");
+  }
+};
 
   const handleCloseModal = () => {
     setSelectedReportId(null);
@@ -145,13 +183,16 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                   <div className="flex flex-row justify-between mt-4 text-md gap-4">
                     <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger>
-                          <button
-                            className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg"
-                            onClick={() => handleBroadcastClick(report._id)}
-                          >
-                            <FaBroadcastTower className="" />
-                          </button>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <button
+                              className="bg-[#123F7B] text-white p-4 rounded-xl flex items-center shadow-lg"
+                              onClick={() => handleBroadcastClick(report._id)}
+                              type="button"
+                            >
+                              <FaBroadcastTower className="" />
+                            </button>
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className='text-xs font-light text-[#123f7b]'>Click to broadcast report</p>
@@ -160,21 +201,24 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                     </TooltipProvider>
                     {report.isPublished && (
                       <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <button
-                            className="bg-[#D46A79] text-white p-4 rounded-xl flex items-center shadow-lg"
-                            onClick={handleUnpublish} // Call handleUnpublish on click
-                            disabled={loading}
-                          >
-                            <FaEyeSlash className="" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className='text-xs font-light text-[#123f7b]'>Click to hide report</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
+                              <button
+                                className="bg-[#D46A79] text-white p-4 rounded-xl flex items-center shadow-lg"
+                                onClick={handleUnpublish}
+                                disabled={loading}
+                                type="button"
+                              >
+                                <FaEyeSlash className="" />
+                              </button>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className='text-xs font-light text-[#123f7b]'>Click to hide report</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
                   <div className='m-4'>
@@ -246,14 +290,14 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
                       </Tabs>
                     </div>
                   ) : showUpdateStatus ? (
-                    <UpdateStatusReport
-                      onClose={handleCloseUpdateStatus} // Close UpdateStatusReport
-                      onSubmit={handleUpdateStatus}
-                      currentStatus={currentReport?.status}
-                    />
-                  ) : (
-                    <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
-                  )}
+                      <UpdateStatusReport
+                        onClose={() => setShowUpdateStatus(false)}
+                        onSubmit={handleCloseUpdateStatus}
+                        currentStatus={report.status}
+                      />
+                    ) : (
+                      <BroadcastReport reportId={selectedReportId} onClose={handleCloseModal} />
+                    )}
                 </div>
               </div>
             </div>

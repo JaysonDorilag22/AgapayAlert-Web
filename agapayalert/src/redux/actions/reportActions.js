@@ -237,33 +237,54 @@ export const assignPoliceStation = (assignmentData) => async (dispatch) => {
 export const updateUserReport = (reportId, updateData) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_STATUS_REQUEST });
-
-    const config = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
-    };
-
-    const { data } = await axios.put(
+    
+    // Add updatedBy field from user ID
+    const response = await axios.put(
       `${server}/report/update-status/${reportId}`,
-      updateData,
-      config
+      {
+        status: updateData.status,
+        followUp: updateData.followUp
+      },
+      { 
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        withCredentials: true 
+      }
     );
 
-    dispatch({
-      type: UPDATE_STATUS_SUCCESS,
-      payload: data,
-    });
+    // Ensure we're handling the response correctly
+    const { data } = response;
 
-    return { success: true, data };
+    if (data.success) {
+      dispatch({
+        type: UPDATE_STATUS_SUCCESS,
+        payload: {
+          report: data.data // The updated report object
+        }
+      });
+
+      return { 
+        success: true, 
+        data: data.data
+      };
+    } else {
+      throw new Error(data.msg || 'Update failed');
+    }
+
   } catch (error) {
+    console.error('Update error:', error);
     const message = error.response?.data?.msg || error.message;
+    
     dispatch({
       type: UPDATE_STATUS_FAIL,
-      payload: message,
+      payload: message
     });
-    return { success: false, error: message };
+
+    return { 
+      success: false, 
+      error: message 
+    };
   }
 };
 

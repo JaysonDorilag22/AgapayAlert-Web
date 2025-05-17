@@ -84,3 +84,4 @@
   border-radius: 9999px; /* Fully rounded */
   border: 3px solid var(--muted);
 }
+.animate-pulse-slow { animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
