@@ -7,17 +7,20 @@ import { Link } from 'react-router-dom';
 import logowhite from '../../assets/AGAPAYALERTwhite.svg';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../../components/ui/hover-card';
 import { motion } from 'framer-motion';
+import { Dialog, DialogContent } from '../../components/ui/dialog';
+import IndexCreateReport from '../../components/CreateReport/IndexCreateReport';
 
 const ReportMainPage = () => {
   const dispatch = useDispatch();
   const { feed, loading, error } = useSelector((state) => state.reports);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const [page, setPage] = useState(1);
   const [searchParams, setSearchParams] = useState({
     searchName: '',
     city: '',
     type: '',
   });
+  const [selectedReportId, setSelectedReportId] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -71,6 +74,13 @@ const ReportMainPage = () => {
     });
   };
 
+    const handleReportClick = (reportId) => {
+    setSelectedReportId(reportId);
+  };
+    const handleCloseModal = () => {
+    setSelectedReportId(null);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="h-screen flex flex-col items-center justify-center">
@@ -103,7 +113,9 @@ const ReportMainPage = () => {
               </div>
               <div className='flex flex-row w-full'>
                 <p className='text-md font-light text-white'>Haven't found them yet?</p>
-                <Link to="/" className="text-[#D46A79] text-md font-base pl-1">Report here.</Link>
+                <button onClick={() => handleReportClick('new')} className="flex items-center justify-center">
+                    <p className="text-[#D46A79] text-md font-base pl-1">Report here.</p>
+                </button>
               </div>
             </div>
             <div className='relative'>
@@ -215,6 +227,13 @@ const ReportMainPage = () => {
           </button>
         </div>
       </div>
+      {selectedReportId && (
+        <IndexCreateReport
+          reportId={selectedReportId}
+          onClose={handleCloseModal}
+          user={user} // Pass user as a prop
+        />
+      )}
     </div>
   );
 };

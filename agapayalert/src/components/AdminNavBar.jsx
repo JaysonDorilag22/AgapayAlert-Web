@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from '../redux/actions/authActions';
 import logo from "../assets/AGAPAYALERT - imagotype.svg";
-import { MdOutlineDashboard, MdOutlineInsertChart, MdOutlineLocalPolice, MdOutlineLocationCity, MdOutlinePeople, MdOutlineFeedback, MdOutlineLogout } from 'react-icons/md';
+import { MdOutlineDashboard, MdOutlineInsertChart, MdOutlineLocalPolice, MdOutlineAnalytics , MdOutlinePeople, MdOutlineFeedback, MdOutlineLogout } from 'react-icons/md';
 
 const AdminNavBar = () => {
     const dispatch = useDispatch();
@@ -61,9 +61,9 @@ const AdminNavBar = () => {
                 </Link>
               </li>
               <li className="py-2 px-4">
-                <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
-                    <MdOutlineLocationCity className="" size={38} />
-                    <p>Cities</p>
+                <Link to="/admin/analytics" className="flex flex-row justify-start place-items-center space-x-4">
+                    <MdOutlineAnalytics  className="" size={38} />
+                    <p>Analytics</p>
                 </Link>
               </li>
               <li className="py-2 px-4">

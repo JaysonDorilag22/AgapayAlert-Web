@@ -11,6 +11,7 @@ import NavBar from './components/NavBar';
 import ReportCard from './pages/User/ReportCard';
 import ProfileCard from './pages/User/ProfileCard';
 import PoliceStation from './pages/Admin/PoliceStation/indexPolice';
+import IndexCharts from './pages/Admin/Analytics/IndexCharts';
 import ProtectedRoute from './navigations/ProtectedRoute';
 import { loginSuccess } from './redux/actions/authActions';
 
@@ -54,6 +55,7 @@ const AppContent = () => {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="reports" element={<IndexReports />} />
                 <Route path="police-station" element={<PoliceStation />} />
+                <Route path="analytics" element={<IndexCharts />} />
                 {/* Add more admin routes here */}
               </Routes>
             </ProtectedRoute>

@@ -9,6 +9,9 @@ import pasay from "../assets/pnplogo/PasayLogo.svg";
 import paranaque from "../assets/pnplogo/ParanaqueLogo.svg";
 import pateros from "../assets/pnplogo/PaterosLogo.svg";
 import tup from "../assets/TUP.png";
+import { FaHandsHelping } from "react-icons/fa";
+import { GrUpdate } from "react-icons/gr";
+import { AiOutlineSafety } from "react-icons/ai";
 
 
 const Home = () => {
@@ -93,55 +96,70 @@ const Home = () => {
           </div>
         </div>
         <div className="Container bg-[#123F7B] h-full rounded-[75px] overflow-hidden content-center px-8 py-10 lg:px-44 lg:py-10">
-          <div className="grid grid-row-3 gap-8 place-content-between">
-            <div className="grid grid-cols-1">
-              <p className="text-white text-xl tracking-wider text-center lg:text-3xl font-semibold">Turn your phone into a tool for saving lives and keeping your community safe.</p>
+          <div className="flex flex-col gap-8">
+            <div className="w-full">
+              <p className="text-white text-xl tracking-wider text-center lg:text-3xl font-semibold">
+                Turn your phone into a tool for saving lives and keeping your community safe.
+              </p>
             </div>
-            <div className="grid grid-cols-1 py-8">
-              <div className="Container bg-white h-full w-full rounded-[75px] overflow-hidden content-center justify-between px-1 py-1">
-              </div>  
+            <div className="w-full py-8">
+              <div className="Container bg-white h-full w-full rounded-[75px] overflow-hidden content-center justify-between px-1 py-1"></div>
             </div>
-            <div className="grid grid-cols-4 gap-2 pt-4">
-              <div className="grid grid-row-3 gap-4 justify-start text-white text-start">
-                <div className="grid grid-cols-1">
-                  <GoClock className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2"/>
+            <div className="flex flex-col md:flex-row gap-6 pt-4">
+              {/* Card 1 */}
+              <div className="flex flex-col flex-1 gap-4 justify-start text-white text-start">
+                <div>
+                  <GoClock className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2" />
                 </div>
-                <div className="grid grid-cols-1">
+                <div>
                   <p className="text-lg lg:text-3xl font-semibold">REAL-TIME</p>
                 </div>
-                <div className="grid grid-cols-1 py-2">
-                  <p className="text-md font-extralight">Receive notifications and warnings from local authorities and emergency responders.</p>
+                <div className="py-2">
+                  <p className="text-md font-extralight">
+                    Delivers immediate notifications about missing persons, ensuring swift public awareness and action within affected areas.
+                  </p>
                 </div>
               </div>
-              <div className="grid grid-row-3 gap-4 justify-start text-white text-start">
-                <div className="grid grid-cols-1">
-                  <GoClock className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2"/>
+              {/* Card 2 */}
+              <div className="flex flex-col flex-1 gap-4 justify-start text-white text-start">
+                <div>
+                  <FaHandsHelping className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2" />
                 </div>
-                <div className="grid grid-cols-1">
-                  <p className="text-lg lg:text-3xl font-semibold">REAL-TIME</p>
+                <div>
+                  <p className="text-lg lg:text-3xl font-semibold">COMMUNITY HELP</p>
                 </div>
-                <div className="grid grid-cols-1 py-2">
-                  <p className="text-md font-extralight">Receive notifications and warnings from local authorities and emergency responders.</p>
+                <div className="py-2">
+                  <p className="text-md font-extralight">
+                    Connects the public with police stations in Taguig, Makati, Parañaque, Pasay, and Pateros, allowing users to report incidents, provide leads, and support recovery efforts collaboratively.
+                  </p>
                 </div>
-              </div><div className="grid grid-row-3 gap-4 justify-start text-white text-start">
-                <div className="grid grid-cols-1">
-                  <GoClock className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2"/>
+              </div>
+              {/* Card 3 */}
+              <div className="flex flex-col flex-1 gap-4 justify-start text-white text-start">
+                <div>
+                  <GrUpdate className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2" />
                 </div>
-                <div className="grid grid-cols-1">
-                  <p className="text-lg lg:text-3xl font-semibold">REAL-TIME</p>
+                <div>
+                  <p className="text-lg lg:text-3xl font-semibold">CASE UPDATES</p>
                 </div>
-                <div className="grid grid-cols-1 py-2">
-                  <p className="text-md font-extralight">Receive notifications and warnings from local authorities and emergency responders.</p>
+                <div className="py-2">
+                  <p className="text-md font-extralight">
+                    Provides real-time updates on each case, helping both authorities and the public stay informed on progress.
+                  </p>
                 </div>
-              </div><div className="grid grid-row-3 gap-4 justify-start text-white text-start">
-                <div className="grid grid-cols-1">
-                  <GoClock className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2"/>
+              </div>
+              {/* Card 4 */}
+              <div className="flex flex-col flex-1 gap-4 justify-start text-white text-start">
+                <div>
+                  <AiOutlineSafety className="text-white w-8 h-8 lg:w-16 lg:h-16 py-2" />
                 </div>
-                <div className="grid grid-cols-1">
-                  <p className="text-lg lg:text-3xl font-semibold">REAL-TIME</p>
+                <div>
+                  <p className="text-lg lg:text-3xl font-semibold">SAFE REPORTS</p>
                 </div>
-                <div className="grid grid-cols-1 py-2">
-                  <p className="text-md font-extralight">Receive notifications and warnings from local authorities and emergency responders.</p>
+                <div className="py-2">
+                  <p className="text-md font-extralight">
+                    Your information stays protected. Report safely and confidently
+                  </p>
                 </div>
               </div>
             </div>

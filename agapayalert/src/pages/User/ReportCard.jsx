@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import tileblue from '../../assets/tilelogoblue.png';
-import { GoClock } from "react-icons/go";
-import { FaCheck, FaSearch } from "react-icons/fa";
+
+// Layout
 import ProfileLayout from '@/layouts/ProfileLayout';
-import { CiLocationOn } from "react-icons/ci";
-import { IoCalendarClearOutline, IoCallOutline } from "react-icons/io5";
-import { LuUsersRound } from "react-icons/lu";
-import { PiWarningCircle } from 'react-icons/pi';
-import { GrInProgress } from "react-icons/gr";
-import { FaUserCheck } from "react-icons/fa6";
-import { PiDetectiveFill } from "react-icons/pi";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { FaUserTag } from "react-icons/fa";
-import { TbCalendarUser } from "react-icons/tb";
-import { PiGenderIntersexLight } from "react-icons/pi";
-import { GiClothes } from "react-icons/gi";
-import { MdOutlineContactPhone } from "react-icons/md";
+
+// Redux actions
 import { getUserReports, getReportDetails } from '../../redux/actions/reportActions';
+
+// Tooltip UI
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../../components/ui/tooltip";
+
+// Icons
+import { GoClock } from "react-icons/go";
+import { FaCheck, FaSearch } from "react-icons/fa";
+import { GrInProgress } from "react-icons/gr";
+import { FaUserCheck } from "react-icons/fa6";
+import { PiDetectiveFill, PiWarningCircle, PiGenderIntersexLight } from "react-icons/pi";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { CiLocationOn } from "react-icons/ci";
+import { IoCalendarClearOutline, IoCallOutline } from "react-icons/io5";
+import { LuUsersRound, LuFileUser } from "react-icons/lu";
+import { FaUserTag } from "react-icons/fa";
+import { TbCalendarUser } from "react-icons/tb";
+import { GiClothes, GiScarWound, GiMedicines } from "react-icons/gi";
+import { MdOutlineContactPhone, MdOutlineInvertColors, MdOutlineBloodtype } from "react-icons/md";
+import { RiUserCommunityLine, RiEye2Line } from "react-icons/ri";
+import { SiWeightsandbiases } from "react-icons/si";
 
 // Helper to get icon based on status
 const getStatusColor = (status) => {
@@ -122,6 +130,8 @@ const user = useSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(true);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -134,19 +144,47 @@ const user = useSelector((state) => state.auth.user);
   }, [dispatch, user?._id]);
 
   useEffect(() => {
-  const fetchDetails = async () => {
-    if (selectedReportId) {
-      setSelectedReport(null); // Optional: show loading state
-      const result = await dispatch(getReportDetails(selectedReportId));
-      console.log('getReportDetails result:', result); // <-- Add this line
-      setSelectedReport(result?.data || null);
-    }
-  };
-  fetchDetails();
-}, [dispatch, selectedReportId]);
+    const fetchDetails = async () => {
+      if (selectedReportId) {
+        setSelectedReport(null);
+        const result = await dispatch(getReportDetails(selectedReportId));
+        setSelectedReport(result?.data || null);
+      }
+    };
+    fetchDetails();
+  }, [dispatch, selectedReportId]);
 
-  // You can add search/filter logic here if needed
-  const sortedReports = [...userReports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  // Search handler
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // Optionally, you can trigger filtering here, but filtering is done below
+  };
+
+  // Filtered and sorted reports
+  const filteredReports = userReports.filter((report) => {
+    const firstName = report.personInvolved?.firstName?.toLowerCase() || "";
+    const lastName = report.personInvolved?.lastName?.toLowerCase() || "";
+    const search = searchTerm.toLowerCase();
+    const matchesSearch = firstName.includes(search) || lastName.includes(search);
+
+    // Status filter logic
+    const matchesStatus =
+      statusFilter === "All"
+        ? true
+        : statusFilter === "Under Investigation"
+        ? report.status === "Under Investigation"
+        : report.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const sortedReports = [...filteredReports].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   const handleCopyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -163,37 +201,51 @@ const user = useSelector((state) => state.auth.user);
                 
                 <div className='flex flex-col place-items-start space-y-4 w-full h-full text-[#123F7B]'>
                     <div className='w-full'>
-                        <div className='w-full'>
-                            <form className="relative w-full">
-                                <input
-                                type="text"
-                                name="search"
-                                placeholder="Search by First Name or Last Name"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#123F7B] focus:border-white"
-                                />
-                                <button type="submit" className="absolute right-0 top-0 mt-1 mr-2 bg-[#123F7B] text-white px-4 py-2 rounded-full">
-                                <FaSearch />
-                                </button>
-                            </form>
-                        </div>
+                      <div className='w-full'>
+                        <form className="relative w-full" onSubmit={handleSearchSubmit}>
+                          <input
+                            type="text"
+                            name="search"
+                            placeholder="Search by First Name or Last Name"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#123F7B] focus:border-white"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                          />
+                          <button type="submit" className="absolute right-0 top-0 mt-1 mr-2 bg-[#123F7B] text-white px-4 py-2 rounded-full">
+                            <FaSearch />
+                          </button>
+                        </form>
+                      </div>
                     </div>
                     <div className='flex flex-col place-items-start space-y-2 w-full flex-1 min-h-0'>
                         <div className='w-full'>
                             <p className='text-2xl font-bold'>Reports</p>
                         </div>
                         <div className='flex flex-row w-max place-items-center space-x-4'>
-                            <div className='border border-[#123F7B] bg-[#123F7B] rounded-full px-2 py-0.5'>
-                                <p className='text-normal text-white font-normal'>All</p>
-                            </div>
-                            <div className='border border-[#123F7B] rounded-full px-2 py-0.5'>
-                                <p className='text-normal font-normal'>Pending</p>
-                            </div>
-                            <div className='border border-[#123F7B] rounded-full px-2 py-0.5'>
-                                <p className='text-normal font-normal'>Under Investigation</p>
-                            </div>
-                            <div className='border border-[#123F7B] rounded-full px-2 py-0.5'>
-                                <p className='text-normal font-normal'>Resolved</p>
-                            </div>
+                          <div
+                            className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "All" ? "bg-[#123F7B]" : ""}`}
+                            onClick={() => setStatusFilter("All")}
+                          >
+                            <p className={`text-normal font-normal ${statusFilter === "All" ? "text-white" : ""}`}>All</p>
+                          </div>
+                          <div
+                            className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "Pending" ? "bg-[#123F7B]" : ""}`}
+                            onClick={() => setStatusFilter("Pending")}
+                          >
+                            <p className={`text-normal font-normal ${statusFilter === "Pending" ? "text-white" : ""}`}>Pending</p>
+                          </div>
+                          <div
+                            className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "Under Investigation" ? "bg-[#123F7B]" : ""}`}
+                            onClick={() => setStatusFilter("Under Investigation")}
+                          >
+                            <p className={`text-normal font-normal ${statusFilter === "Under Investigation" ? "text-white" : ""}`}>Under Investigation</p>
+                          </div>
+                          <div
+                            className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "Resolved" ? "bg-[#123F7B]" : ""}`}
+                            onClick={() => setStatusFilter("Resolved")}
+                          >
+                            <p className={`text-normal font-normal ${statusFilter === "Resolved" ? "text-white" : ""}`}>Resolved</p>
+                          </div>
                         </div>
                         <div className='flex flex-col flex-1 min-h-0 w-full space-y-4 overflow-y-auto pb-8 pt-2 px-4 mb-4'>
                             {loading ? (
@@ -267,95 +319,96 @@ const user = useSelector((state) => state.auth.user);
                     <div className='flex flex-col space-y-2 h-max w-full overflow-auto pb-4 px-1'>
                     {/* Status Section */}
                     <div className='flex flex-col w-full h-max bg-[#F5F5F5] rounded-lg justify-between shadow-md shadow-[#123f7b]/25 space-y-2 p-2'>
-                        <div>
+                      <div>
                         <p className='text-md font-semibold'>Status</p>
-                        </div>
-                        {/* Status Progress Steps */}
-                        <div className='flex flex-row place-items-center justify-center space-x-2 text-white transition-all duration-200'>
-                        {/* Step 1: Pending */}
-                        <div className={
-                            `rounded-md px-4 py-1 flex items-center justify-center
-                            ${selectedReport.status === "Pending"
-                            ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
-                            : ["Assigned", "Under Investigation", "Resolved", "Archived"].includes(selectedReport.status)
-                                ? "bg-[#123F7B]"
-                                : "bg-[#123F7B]/25"}`
-                        }>
-                            {["Assigned", "Under Investigation", "Resolved", "Archived"].includes(selectedReport.status)
-                            ? <FaCheck className='text-xs' />
-                            : <span className='text-xs'>1</span>
-                            }
-                        </div>
-                        {/* Step 2: Assigned */}
-                        <div className={
-                            `rounded-md px-4 py-1 flex items-center justify-center
-                            ${selectedReport.status === "Assigned"
-                            ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
-                            : ["Under Investigation", "Resolved", "Archived"].includes(selectedReport.status)
-                                ? "bg-[#123F7B]"
-                                : "bg-[#123F7B]/25"}`
-                        }>
-                            {["Under Investigation", "Resolved", "Archived"].includes(selectedReport.status)
-                            ? <FaCheck className='text-xs' />
-                            : <span className='text-xs'>2</span>
-                            }
-                        </div>
-                        {/* Step 3: Under Investigation */}
-                        <div className={
-                            `rounded-md px-4 py-1 flex items-center justify-center
-                            ${selectedReport.status === "Under Investigation"
-                            ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
-                            : ["Resolved", "Archived"].includes(selectedReport.status)
-                                ? "bg-[#123F7B]"
-                                : "bg-[#123F7B]/25"}`
-                        }>
-                            {["Resolved", "Archived"].includes(selectedReport.status)
-                            ? <FaCheck className='text-xs' />
-                            : <span className='text-xs'>3</span>
-                            }
-                        </div>
-                        {/* Step 4: Resolved */}
-                        <div className={
-                            `rounded-md px-4 py-1 flex items-center justify-center
-                            ${selectedReport.status === "Resolved"
-                            ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
-                            : selectedReport.status === "Archived"
-                                ? "bg-[#123F7B]"
-                                : "bg-[#123F7B]/25"}`
-                        }>
-                            {selectedReport.status === "Archived"
-                            ? <FaCheck className='text-xs' />
-                            : <span className='text-xs'>4</span>
-                            }
-                        </div>
-                        {/* Step 5: Archived (conditional) */}
-                        {selectedReport.status === "Archived" && (
-                            <div className="bg-[#A0AEC0] rounded-md px-4 py-1 flex items-center justify-center ring-2 ring-[#A0AEC0]">
+                      </div>
+                      {/* Status Progress Steps */}
+                      <div className='flex flex-row place-items-center justify-center space-x-2 text-white transition-all duration-200'>
+                        {selectedReport.status === "Archived" ? (
+                          // Only show Archived status
+                          <div className="bg-[#A0AEC0] rounded-md px-4 py-1 flex items-center justify-center ring-2 ring-[#A0AEC0]">
                             <span className='text-xs'>Archived</span>
+                          </div>
+                        ) : (
+                          <>
+                            {/* Step 1: Pending */}
+                            <div className={
+                              `rounded-md px-4 py-1 flex items-center justify-center
+                              ${selectedReport.status === "Pending"
+                                ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
+                                : ["Assigned", "Under Investigation", "Resolved"].includes(selectedReport.status)
+                                  ? "bg-[#123F7B]"
+                                  : "bg-[#123F7B]/25"}`
+                            }>
+                              {["Assigned", "Under Investigation", "Resolved"].includes(selectedReport.status)
+                                ? <FaCheck className='text-xs' />
+                                : <span className='text-xs'>1</span>
+                              }
                             </div>
+                            {/* Step 2: Assigned */}
+                            <div className={
+                              `rounded-md px-4 py-1 flex items-center justify-center
+                              ${selectedReport.status === "Assigned"
+                                ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
+                                : ["Under Investigation", "Resolved"].includes(selectedReport.status)
+                                  ? "bg-[#123F7B]"
+                                  : "bg-[#123F7B]/25"}`
+                            }>
+                              {["Under Investigation", "Resolved"].includes(selectedReport.status)
+                                ? <FaCheck className='text-xs' />
+                                : <span className='text-xs'>2</span>
+                              }
+                            </div>
+                            {/* Step 3: Under Investigation */}
+                            <div className={
+                              `rounded-md px-4 py-1 flex items-center justify-center
+                              ${selectedReport.status === "Under Investigation"
+                                ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
+                                : ["Resolved"].includes(selectedReport.status)
+                                  ? "bg-[#123F7B]"
+                                  : "bg-[#123F7B]/25"}`
+                            }>
+                              {["Resolved"].includes(selectedReport.status)
+                                ? <FaCheck className='text-xs' />
+                                : <span className='text-xs'>3</span>
+                              }
+                            </div>
+                            {/* Step 4: Resolved */}
+                            <div className={
+                              `rounded-md px-4 py-1 flex items-center justify-center
+                              ${selectedReport.status === "Resolved"
+                                ? "bg-[#123F7B] ring-2 ring-[#123F7B]"
+                                : "bg-[#123F7B]/25"}`
+                            }>
+                              <span className='text-xs'>4</span>
+                            </div>
+                          </>
                         )}
-                        </div>
-                        <div>
+                      </div>
+                      <div>
                         <p className='text-xs font-light leading-none mt-2'>
-                            {(() => {
+                          {(() => {
                             let step = 1, stepLabel = "PENDING";
                             if (selectedReport.status === "Assigned") { step = 2; stepLabel = "ASSIGNED"; }
                             else if (selectedReport.status === "Under Investigation") { step = 3; stepLabel = "UNDER INVESTIGATION"; }
                             else if (selectedReport.status === "Resolved") { step = 4; stepLabel = "RESOLVED"; }
                             else if (selectedReport.status === "Archived") { step = 5; stepLabel = "ARCHIVED"; }
                             return (
-                                <>
-                                Your report is currently in <strong className='font-semibold'>STEP {step}</strong>. The case is
-                                {step === 1 && <> waiting for review and is <strong className='font-semibold'>PENDING</strong>.</>}
-                                {step === 2 && <> handled by an officer and is <strong className='font-semibold'>ASSIGNED</strong>.</>}
-                                {step === 3 && <> handled by an officer and is <strong className='font-semibold'>UNDER INVESTIGATION</strong>.</>}
-                                {step === 4 && <> <strong className='font-semibold'>RESOLVED</strong>.</>}
-                                {step === 5 && <> <strong className='font-semibold'>ARCHIVED</strong>.</>}
-                                </>
+                              <>
+                                {step === 5
+                                  ? <>Your report is currently <strong className='font-semibold'>ARCHIVED</strong>.</>
+                                  : <>Your report is currently in <strong className='font-semibold'>STEP {step}</strong>. The case is
+                                    {step === 1 && <> waiting for review and is <strong className='font-semibold'>PENDING</strong>.</>}
+                                    {step === 2 && <> handled by an officer and is <strong className='font-semibold'>ASSIGNED</strong>.</>}
+                                    {step === 3 && <> handled by an officer and is <strong className='font-semibold'>UNDER INVESTIGATION</strong>.</>}
+                                    {step === 4 && <> <strong className='font-semibold'>RESOLVED</strong>.</>}
+                                  </>
+                                }
+                              </>
                             );
-                            })()}
+                          })()}
                         </p>
-                        </div>
+                      </div>
                     </div>
                     {/* Assigned Officer Section */}
                     <div className='flex flex-col w-full h-max bg-[#F5F5F5] rounded-lg justify-between shadow-md shadow-[#123f7b]/25 space-y-2 p-2'>
@@ -488,6 +541,110 @@ const user = useSelector((state) => state.auth.user);
                                 </div>
                             </div>
                             </div>
+                        </div>
+                        <div className='flex flex-col space-y-1 w-full h-max'>
+                          <p className='text-sm font-semibold'>Physical Info</p>
+                          <div className='flex flex-col space-y-2 w-full place-items-start p-1'>
+                            {/* Race */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <RiUserCommunityLine className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Race</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.race || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Height & Weight */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <SiWeightsandbiases className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-row space-x-2'>
+                                <div className='flex flex-col -space-y-0.5'>
+                                  <p className='text-xs font-light text-[#D46A79]'>Height</p>
+                                  <p className='text-xs font-semibold'>
+                                    {selectedReport.personInvolved?.height || 'N/A'}
+                                  </p>
+                                </div>
+                                <div className='flex flex-col justify-center text-[#D46A79] font-bold'>|</div>
+                                <div className='flex flex-col -space-y-0.5'>
+                                  <p className='text-xs font-light text-[#D46A79]'>Weight</p>
+                                  <p className='text-xs font-semibold'>
+                                    {selectedReport.personInvolved?.weight || 'N/A'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            {/* Eye Color */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <RiEye2Line className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Eye Color</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.eyeColor || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Scars / Marks / Tattoos */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <GiScarWound className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Scars / Marks / Tattoos</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.scarsMarksTattoos || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Hair Color */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <MdOutlineInvertColors className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Hair Color</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.hairColor || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Birth Defects */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <LuFileUser className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Birth Defects</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.birthDefects || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Prosthetics */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <LuFileUser className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Prosthetics</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.prosthetics || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Blood Type */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <MdOutlineBloodtype className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Blood Type</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.bloodType || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                            {/* Medications */}
+                            <div className='flex flex-row space-x-0.5'>
+                              <GiMedicines className='text-[#D46A79] text-3xl' />
+                              <div className='flex flex-col -space-y-0.5'>
+                                <p className='text-xs font-light text-[#D46A79]'>Medications</p>
+                                <p className='text-xs font-semibold'>
+                                  {selectedReport.personInvolved?.medications || 'N/A'}
+                                </p>
+                              </div>
+                            </div>
+                        </div>
                         </div>
                         </div>
                     </div>

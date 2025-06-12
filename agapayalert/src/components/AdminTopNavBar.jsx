@@ -31,8 +31,8 @@ const AdminTopNavBar = () => {
         return 'Reports';
       case '/admin/police-station':
         return 'Police Stations';
-      case '/admin/cities':
-        return 'Cities';
+      case '/admin/analytics':
+        return 'Analytics';
       case '/admin/users':
         return 'Users';
       case '/admin/feedbacks':
