@@ -14,6 +14,7 @@ import PoliceStation from './pages/Admin/PoliceStation/indexPolice';
 import IndexCharts from './pages/Admin/Analytics/IndexCharts';
 import ProtectedRoute from './navigations/ProtectedRoute';
 import { loginSuccess } from './redux/actions/authActions';
+import { Toaster } from "sonner";
 
 const AppContent = () => {
   const location = useLocation();
@@ -70,6 +71,7 @@ const AppContent = () => {
 export default function App() {
   return (
     <Router>
+      <Toaster richColors position="top-right" />
       <AppContent />
     </Router>
   );

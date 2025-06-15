@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineDocumentChartBar, HiOutlineCalendarDays, HiOutlinePercentBadge, HiOutlineEye } from "react-icons/hi2";
 import { PiClockClockwiseLight } from "react-icons/pi";
 import logo from "../../assets/AGAPAYALERT.svg";
 import Logo from "../../assets/AGAPAYALERT - imagotype.svg";
 import { getBasicAnalytics } from "../../redux/actions/dashboardActions";
 import { getReports } from "../../redux/actions/reportActions";
+import toastUtils from "../../utils/toastUtils";
+import { joinRoom, leaveRoom, initializeSocket, subscribeToNewReports, subscribeToReportUpdates, unsubscribeFromReports, unsubscribeFromUpdates } from "../../services/socketService";
+
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -15,19 +18,93 @@ const Dashboard = () => {
   const { basicAnalytics } = useSelector((state) => state.dashboard);
   const { reports } = useSelector((state) => state.reports);
   const [hover, setHover] = useState(false);
+  const navigate = useNavigate();
+  const socketRef = useRef(null);
+
+  // Helper to reload dashboard data
+  const loadData = async () => {
+    await dispatch(getBasicAnalytics());
+    await dispatch(getReports({ page: 1, limit: 10 }));
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await dispatch(getBasicAnalytics());
-      console.log("Basic Analytics Data:", result.data);
+  let mounted = true;
 
-      const reportsResult = await dispatch(getReports({ page: 1, limit: 10 }));
-      console.log("Reports Data:", reportsResult.data);
-    };
+  const setupSocket = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No JWT token found in localStorage");
+      return;
+    }
+    const socket = await initializeSocket(token);
+    if (!socket) {
+      console.warn("Socket not initialized");
+      return;
+    }
+    socketRef.current = socket;
 
-    fetchData();
-  }, [dispatch]);
+    socket.on("connect", () => {
+      console.log("Socket connected successfully");
+      if (user?.policeStation) {
+        joinRoom(`policeStation_${user.policeStation}`);
+      }
+      if (user?.address?.city) {
+        joinRoom(`city_${user.address.city}`);
+      }
+      console.log("Socket initialized and rooms joined");
+    });
 
+    subscribeToNewReports((data) => {
+      console.log("SOCKET EVENT: NEW_REPORT", data); // <--- Add this
+      if (mounted) {
+        toastUtils("New report received!", "success");
+        dispatch({ type: "ADD_REPORT", payload: data.report });
+      }
+    });
+
+    subscribeToReportUpdates((data) => {
+      console.log("SOCKET EVENT: REPORT_UPDATED", data); // <--- Add this
+      if (mounted) {
+        toastUtils("Report updated!", "info");
+        dispatch({ type: "UPDATE_REPORT", payload: data.report });
+      }
+    });
+  };
+
+  setupSocket();
+  loadData();
+
+  return () => {
+    mounted = false;
+    if (user?.policeStation) {
+      leaveRoom(`policeStation_${user.policeStation}`);
+    }
+    if (user?.address?.city) {
+      leaveRoom(`city_${user.address.city}`);
+    }
+    unsubscribeFromReports();
+    unsubscribeFromUpdates();
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+  };
+}, [dispatch, user?.policeStation, user?.address?.city]);
+
+  const filteredReports =
+  user?.roles?.includes("police_admin")
+    ? reports || []
+    : reports?.filter(
+        (report) => report.assignedOfficer?._id === user?._id
+      ) || [];
+  
+  const ongoingReports = filteredReports.filter(
+  (report) => report.status !== "Resolved" && report.status !== "Transferred"
+  );
+
+   const pendingCount = filteredReports.filter(
+    (report) => report.status !== "Resolved" && report.status !== "Transferred"
+  ).length;
 
   return (
     <AdminLayout>
@@ -91,13 +168,19 @@ const Dashboard = () => {
                     <PiClockClockwiseLight className="w-full h-full"/>
                   </div>
                   <div className='col-start-2-col-end-4 col-span-2 grid grid-row-2 text-white font-semibold'>
-                    <div className='text-xl'>{basicAnalytics?.performance?.pending || 0}</div>
-                    <div className='text-xs'>Pending Reports</div>
+                    <div className='text-xl'>{pendingCount}</div>
+                    <div className='text-xs'>Ongoing Reports</div>
                   </div>
                 </div>
               </div>
             </div>
         </div>
+        <button
+          onClick={() => toastUtils("Test toast from Dashboard!", "success")}
+          style={{ position: "fixed", top: 10, right: 10, zIndex: 9999 }}
+        >
+          Test Toast
+        </button>
         <div 
           className="grid grid-row-2 gap-4 cursor-pointer relative"
           onMouseEnter={() => setHover(true)}
@@ -111,7 +194,7 @@ const Dashboard = () => {
               </Link>
             </div>
           )}
-          {reports?.slice(0, 2).map((report) => (
+          {ongoingReports?.slice(0, 2).map((report) => (
             <div key={report._id} className="bg-[#123F7B]/15 h-[150px] w-full rounded-[15px] overflow-hidden content-center shadow-lg px-2 py-2">
               <div className="grid grid-cols-6">
                 <div className="col-start-1 col-end-2 place-items-center content-center justify-center">

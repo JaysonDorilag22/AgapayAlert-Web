@@ -7,6 +7,7 @@ import ReportsTable from "./ReportTable/ReportsTable";
 const IndexReports = () => {
   const dispatch = useDispatch();
   const { reports, totalPages, currentPage } = useSelector((state) => state.reports);
+   const user = useSelector((state) => state.auth.user); // Assumes user info is in state.auth.user
   const [filters, setFilters] = useState({ page: 1, limit: 10 });
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,11 +33,19 @@ const IndexReports = () => {
     setFilters((prevFilters) => ({ ...prevFilters, searchName: query, page: 1 }));
   };
 
+    // Filter reports assigned to the current user
+const filteredReports =
+  user?.roles?.includes("police_admin")
+    ? reports || []
+    : reports?.filter(
+        (report) => report.assignedOfficer?._id === user?._id
+      ) || [];
+
   return (
     <AdminLayout>
       <div>
         <ReportsTable
-          reports={reports}
+          reports={filteredReports}
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}

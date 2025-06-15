@@ -10,6 +10,7 @@ import { GrInProgress } from "react-icons/gr";
 import { FaUserCheck } from "react-icons/fa6";
 import { PiDetectiveFill } from "react-icons/pi";
 import { HiOutlineDocumentCheck } from "react-icons/hi2";
+import { CiCircleQuestion } from "react-icons/ci";
 import {
   Tooltip,
   TooltipContent,
@@ -32,7 +33,7 @@ const getStatusIcon = (status) => {
     case "Resolved":
       return <IoMdCheckmarkCircleOutline className="text-white text-md font-light" />;
     default:
-      return <GrInProgress className="text-gray-400 text-md" />;
+      return <CiCircleQuestion className="text-gray-400 text-md" />;
   }
 };
 

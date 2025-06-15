@@ -44,8 +44,8 @@ const STATUS_STEPS = [
     glow: "shadow-[0_0_10px_2px_rgba(39,174,96,0.3)]"
   },
   {
-    key: "Archived",
-    label: "Archived",
+    key: "Transferred",
+    label: "Transferred",
     color: "#BDBDBD",
     icon: <IoArchiveOutline className="w-6 h-6" />,
     bg: "bg-[#717171]/10 border-4 border-[#BDBDBD]",
@@ -183,9 +183,9 @@ export const UpdateStatusReport = ({ onClose, onSubmit, currentStatus }) => {
                         {isDone ? (
                           <FaCircleCheck className="w-6 h-6 m-4 text-white" style={{ color: "#fff" }} />
                         ) : React.cloneElement(step.icon, {
-                          className: `w-6 h-6 m-4 ${isCurrent ? "drop-shadow-lg" : ""}`,
-                          color: isCurrent ? step.color : "#123F7B",
-                        })}
+                            className: `w-6 h-6 m-4 ${isCurrent ? "drop-shadow-lg" : ""}`,
+                            color: isCurrent ? step.color : "#123F7B",
+                          })}
                       </div>
                       <p className={`${textClass} text-xs text-center w-full break-words transition-all duration-200`}>
                         {step.label}
@@ -196,7 +196,8 @@ export const UpdateStatusReport = ({ onClose, onSubmit, currentStatus }) => {
                         </span>
                       )}
                     </div>
-                    {idx < STATUS_STEPS.length - 1 && (
+                    {/* Remove the line between Resolved and Transferred */}
+                    {idx < STATUS_STEPS.length - 1 && !(step.key === "Resolved" && STATUS_STEPS[idx + 1].key === "Transferred") && (
                       <div className="flex flex-col w-8 h-0 justify-center items-center relative">
                         <div
                           className={

@@ -44,8 +44,8 @@ const getStatusColor = (status) => {
       return "bg-[#F2994A]";
     case "Resolved":
       return "bg-[#27AE60]";
-    case "Archived":
-      return "bg-[#A0AEC0]"; // gray-blue for archived
+    case "Transferred":
+      return "bg-[#A0AEC0]"; // gray-blue for transferred
     default:
       return "bg-gray-300";
   }
@@ -61,7 +61,7 @@ const getStatusIcon = (status) => {
       return <PiDetectiveFill className="text-orange-400 text-xl" />;
     case "Resolved":
       return <IoMdCheckmarkCircleOutline className="text-green-600 text-xl font-light" />;
-    case "Archived":
+    case "Transferred":
       return <IoMdCheckmarkCircleOutline className="text-gray-400 text-xl font-light" />;
     default:
       return <GrInProgress className="text-gray-400 text-xl" />;
@@ -80,8 +80,8 @@ const getStatusTooltip = (status) => {
       return "Under Investigation: Case is being investigated";
     case "Resolved":
       return "Resolved: Report closed";
-    case "Archived":
-      return "Archived: Report is no longer active";
+    case "Transferred":
+      return "Transferred: Report is no longer active";
     default:
       return "Status unknown";
   }
@@ -235,6 +235,12 @@ const user = useSelector((state) => state.auth.user);
                             <p className={`text-normal font-normal ${statusFilter === "Pending" ? "text-white" : ""}`}>Pending</p>
                           </div>
                           <div
+                            className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "Assigned" ? "bg-[#123F7B]" : ""}`}
+                            onClick={() => setStatusFilter("Assigned")}
+                          >
+                            <p className={`text-normal font-normal ${statusFilter === "Assigned" ? "text-white" : ""}`}>Assigned</p>
+                          </div>
+                          <div
                             className={`border border-[#123F7B] rounded-full px-2 py-0.5 cursor-pointer ${statusFilter === "Under Investigation" ? "bg-[#123F7B]" : ""}`}
                             onClick={() => setStatusFilter("Under Investigation")}
                           >
@@ -325,9 +331,9 @@ const user = useSelector((state) => state.auth.user);
                       {/* Status Progress Steps */}
                       <div className='flex flex-row place-items-center justify-center space-x-2 text-white transition-all duration-200'>
                         {selectedReport.status === "Archived" ? (
-                          // Only show Archived status
+                          // Only show Transferred status
                           <div className="bg-[#A0AEC0] rounded-md px-4 py-1 flex items-center justify-center ring-2 ring-[#A0AEC0]">
-                            <span className='text-xs'>Archived</span>
+                            <span className='text-xs'>Transferred</span>
                           </div>
                         ) : (
                           <>
@@ -392,11 +398,11 @@ const user = useSelector((state) => state.auth.user);
                             if (selectedReport.status === "Assigned") { step = 2; stepLabel = "ASSIGNED"; }
                             else if (selectedReport.status === "Under Investigation") { step = 3; stepLabel = "UNDER INVESTIGATION"; }
                             else if (selectedReport.status === "Resolved") { step = 4; stepLabel = "RESOLVED"; }
-                            else if (selectedReport.status === "Archived") { step = 5; stepLabel = "ARCHIVED"; }
+                            else if (selectedReport.status === "Transferred") { step = 5; stepLabel = "TRANSFERRED"; }
                             return (
                               <>
                                 {step === 5
-                                  ? <>Your report is currently <strong className='font-semibold'>ARCHIVED</strong>.</>
+                                  ? <>Your report is currently <strong className='font-semibold'>TRANSFERRED</strong>.</>
                                   : <>Your report is currently in <strong className='font-semibold'>STEP {step}</strong>. The case is
                                     {step === 1 && <> waiting for review and is <strong className='font-semibold'>PENDING</strong>.</>}
                                     {step === 2 && <> handled by an officer and is <strong className='font-semibold'>ASSIGNED</strong>.</>}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { getReportDetails, updateUserReport } from '../redux/actions/reportActions';
+import { getReportDetails, updateUserReport, getReports } from '../redux/actions/reportActions';
 import { getFinderReportsByReportId } from '@/redux/actions/finderActions';
 import { unpublishBroadcast } from '@/redux/actions/broadcastActions';
 import { FaBroadcastTower, FaEyeSlash, FaEdit  } from 'react-icons/fa';
@@ -27,6 +27,7 @@ import { FinderInfo } from './ReportDetails/FinderInfo';
 import BroadcastReport  from './ReportDetails/BroadcastReport';
 import UpdateStatusReport from './ReportDetails/UpdateStatusReport';
 import { redirect } from 'react-router-dom';
+import toastUtils from '@/utils/toastUtils';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -78,13 +79,13 @@ const handleCloseUpdateStatus = async (updateData) => {
   setLoading(false);
   setShowUpdateStatus(false);
   if (result.success) {
-    
-    // Refresh report details using the new loadReportDetails function
+    toastUtils("Report status updated successfully!", "success"); // Show success toast
     await loadReportDetails(true);
-    setSelectedReportId(null); // Reset selected report ID
-     // Redirect to the report details page
+    setSelectedReportId(null);
+    // Refetch the reports list for the table
+    dispatch(getReports({ page: 1, limit: 10 })); // Adjust filters as needed
   } else {
-    alert(result.error || "Update failed");
+    toastUtils(result.error || "Update failed", "error"); // Show error toast
   }
 };
 
@@ -160,6 +161,12 @@ const handleCloseUpdateStatus = async (updateData) => {
             return (
                 <div className='bg-[#34A853]/10 px-2 py-2 rounded-full'>
                     <p className='text-[#34A853] text-sm font-semibold text-center'>{status}</p>
+                </div>
+            );
+         case 'Transferred':
+            return (
+                <div className='bg-[#D46A79]/10 px-2 py-2 rounded-full'>
+                    <p className='text-[#D46A79] text-xs font-semibold text-center'>{status}</p>
                 </div>
             );
     }

@@ -69,6 +69,12 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
                     <p className='text-[#34A853] text-xs font-semibold text-center'>{status}</p>
                 </div>
             );
+         case 'Transferred':
+            return (
+                <div className='bg-[#D46A79]/10 px-2 py-2 rounded-full'>
+                    <p className='text-[#D46A79] text-xs font-semibold text-center'>{status}</p>
+                </div>
+            );
     }
   };
 

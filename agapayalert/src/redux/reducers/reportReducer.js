@@ -40,7 +40,9 @@ import {
     SEARCH_REPORTS_REQUEST,
     SEARCH_REPORTS_SUCCESS,
     SEARCH_REPORTS_FAIL,
-    CLEAR_REPORTS
+    CLEAR_REPORTS,
+    ADD_REPORT,
+    UPDATE_REPORT,
   } from "../actiontypes/reportTypes";
   
   const initialState = {
@@ -318,7 +320,26 @@ import {
             searchLoading: false,
             searchError: action.payload,
           };
-  
+        case "ADD_REPORT":
+            // Prevent duplicates if the report already exists
+            if (state.reports.some(r => r._id === action.payload._id)) {
+              return state;
+            }
+            return {
+              ...state,
+              reports: [action.payload, ...state.reports],
+            };
+
+          // Add this for real-time report update
+          case "UPDATE_REPORT":
+            return {
+              ...state,
+              reports: state.reports.map(report =>
+                report._id === action.payload._id ? action.payload : report
+              ),
+            };
+
+      // ...existing cases...
       default:
         return state;
     }
