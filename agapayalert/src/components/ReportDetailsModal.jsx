@@ -25,6 +25,7 @@ import { PersonalInfo } from './ReportDetails/PersonalInfo';
 import { PhysicalInfo } from './ReportDetails/PhysicalInfo';
 import { MediaInfo } from './ReportDetails/MediaInfo';
 import { FinderInfo } from './ReportDetails/FinderInfo';
+import TransferReportModal from './TransferReportModal';
 import BroadcastReport  from './ReportDetails/BroadcastReport';
 import UpdateStatusReport from './ReportDetails/UpdateStatusReport';
 import { redirect } from 'react-router-dom';
@@ -43,6 +44,8 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [showUpdateStatus, setShowUpdateStatus] = useState(false); // State to toggle UpdateStatusReport
   const [localError, setLocalError] = useState(null);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [pendingTransfer, setPendingTransfer] = useState(false);
   const exportRef = useRef();
   const pdfRef = useRef();
   const missingPosterRef = useRef();
@@ -50,6 +53,15 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   useEffect(() => {
   loadReportDetails();
 }, [dispatch, reportId]);
+
+  const handleUpdateStatus = (data) => {
+    if (data.status === "Transferred") {
+      setShowTransferModal(true);
+      setPendingTransfer(data);
+      return;
+    }
+    handleCloseUpdateStatus(data);
+  };
 
 // Export handler for custom PDF
   const handleExportPDF = () => {
@@ -127,6 +139,7 @@ const handleCloseUpdateStatus = async (updateData) => {
 
   const handleCloseModal = () => {
     setSelectedReportId(null);
+    dispatch(getReports({ page: 1, limit: 10 }));
   };
 
   const handleUnpublish = async () => {
@@ -385,7 +398,7 @@ const handleCloseUpdateStatus = async (updateData) => {
                   ) : showUpdateStatus ? (
                       <UpdateStatusReport
                         onClose={() => setShowUpdateStatus(false)}
-                        onSubmit={handleCloseUpdateStatus}
+                        onSubmit={handleUpdateStatus}
                         currentStatus={report.status}
                       />
                     ) : (
@@ -398,6 +411,20 @@ const handleCloseUpdateStatus = async (updateData) => {
         ) : (
           <p>Loading...</p>
         )}
+        <TransferReportModal
+        open={showTransferModal}
+        onClose={() => setShowTransferModal(false)}
+        reportId={reportId}
+        onTransferred={async () => {
+          setShowTransferModal(false);
+          setShowUpdateStatus(false);
+          toastUtils("Report transferred successfully!", "success");
+          await loadReportDetails(true);
+          setSelectedReportId(null);
+          dispatch(getReports({ page: 1, limit: 10 }));
+          onClose(); // <-- Close the modal after transfe
+        }}
+      />
       </DialogContent>
     </Dialog>
   );

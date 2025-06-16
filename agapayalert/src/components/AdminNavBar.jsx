@@ -32,9 +32,9 @@ const AdminNavBar = () => {
             <div className="">
             <ul>
               <li className="">
-                <Link to="/admin/dashboard">
+                <Link to="/admin/users">
                 <div className="flex flex-row justify-between place-items-center space-x-2 w-full max-w-4/6 bg-[#123F7B]/20 rounded-tr-full rounded-br-full p-2"> 
-                    <p className="font-extrabold text-2xl">Create <br/>New Report</p>
+                    <p className="font-extrabold text-2xl">Create <br/>Officer Profile</p>
                     <div className="bg-[#123F7B] text-white rounded-full h-16 w-16 flex items-center justify-center">
                         <p className="text-2xl">+</p>
                     </div>
@@ -67,17 +67,17 @@ const AdminNavBar = () => {
                 </Link>
               </li>
               <li className="py-2 px-4">
-                <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
+                <Link to="/admin/users" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlinePeople className="" size={38} />
                     <p>Users</p>
                 </Link>
               </li>
-              <li className="py-2 px-4">
+              {/* <li className="py-2 px-4">
                 <Link to="/admin/dashboard" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineFeedback className="" size={38} />
                     <p>Feedbacks</p>
                 </Link>
-              </li>
+              </li> */}
               </div>
             </ul>
             </div>

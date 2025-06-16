@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiHome } from "react-icons/fi";
 import { IoDocumentOutline, IoDocument, IoSettingsOutline, IoSettingsSharp, IoLogOutOutline } from "react-icons/io5";
@@ -19,6 +20,7 @@ const SideBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user); // <-- Add this line
 
   // Logout handler
   const handleLogout = async () => {
@@ -48,14 +50,18 @@ const SideBar = () => {
         : <IoDocumentOutline className="" />,
       tooltip: 'View your reports',
     },
-    {
-      to: '/',
-      isActive: location.pathname === '/',
-      icon: location.pathname === '/'
-        ? <IoSettingsSharp className="" />
-        : <IoSettingsOutline className="" />,
-      tooltip: 'Settings',
-    },
+    // Only show settings tab if user.role is "user"
+    ...(user?.role !== "user"
+      ? [{
+          to: '/profile/settings',
+          isActive: location.pathname === '/profile/settings',
+          icon: location.pathname === '/profile/settings'
+            ? <IoSettingsSharp className="" />
+            : <IoSettingsOutline className="" />,
+          tooltip: 'Settings',
+        }]
+      : []
+    ),
   ];
 
   return (

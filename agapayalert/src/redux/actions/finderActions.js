@@ -1,6 +1,7 @@
 import axios from "axios";
 import { server } from "../store";
 import * as types from "../actiontypes/finderTypes";
+import toastUtils from "@/utils/toastUtils";
 
 export const createFinderReport = (reportData) => async (dispatch) => {
     try {
@@ -22,7 +23,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           payload: data.data
         });
     
-        showToast('Finder report created successfully');
+        toastUtils('Finder report created successfully');
         return { success: true, data: data.data };
       } catch (error) {
         const message = error.response?.data?.msg || error.message;
@@ -30,7 +31,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           type: types.CREATE_FINDER_REPORT_FAIL,
           payload: message
         });
-        showToast(message, 'error');
+        toastUtils(message, 'error');
         return { success: false, error: message };
       }
     };
@@ -152,7 +153,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           payload: data.data
         });
     
-        showToast('Finder report updated successfully');
+        toastUtils('Finder report updated successfully');
         return { success: true, data: data.data };
       } catch (error) {
         const message = error.response?.data?.msg || error.message;
@@ -160,7 +161,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           type: types.UPDATE_FINDER_REPORT_FAIL,
           payload: message
         });
-        showToast(message, 'error');
+        toastUtils(message, 'error');
         return { success: false, error: message };
       }
     };
@@ -169,7 +170,9 @@ export const createFinderReport = (reportData) => async (dispatch) => {
     export const verifyFinderReport = (id, verificationData) => async (dispatch) => {
       try {
         dispatch({ type: types.VERIFY_FINDER_REPORT_REQUEST });
-    
+
+        console.log('Verification Data:', verificationData);
+        console.log('Report ID:', id);
         const { data } = await axios.patch(
           `${server}/finder/${id}/verify`,
           verificationData,
@@ -181,7 +184,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           payload: data.data
         });
     
-        showToast('Finder report verified successfully');
+        toastUtils('Finder report verified successfully');
         return { success: true, data: data.data };
       } catch (error) {
         const message = error.response?.data?.msg || error.message;
@@ -189,7 +192,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           type: types.VERIFY_FINDER_REPORT_FAIL,
           payload: message
         });
-        showToast(message, 'error');
+        toastUtils(message, 'error');
         return { success: false, error: message };
       }
     };
@@ -209,7 +212,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           payload: id
         });
     
-        showToast('Finder report deleted successfully');
+        toastUtils('Finder report deleted successfully');
         return { success: true };
       } catch (error) {
         const message = error.response?.data?.msg || error.message;
@@ -217,7 +220,7 @@ export const createFinderReport = (reportData) => async (dispatch) => {
           type: types.DELETE_FINDER_REPORT_FAIL,
           payload: message
         });
-        showToast(message, 'error');
+        toastUtils(message, 'error');
         return { success: false, error: message };
       }
     };

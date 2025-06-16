@@ -12,6 +12,7 @@ import tup from "../assets/TUP.png";
 import { FaHandsHelping } from "react-icons/fa";
 import { GrUpdate } from "react-icons/gr";
 import { AiOutlineSafety } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 
 const Home = () => {
@@ -24,7 +25,7 @@ const Home = () => {
               <p className="text-white text-lg lg:text-2xl font-light pt-4">Be a part of the solution—help protect your loved ones and neighbors. Real-time updates, life-saving alerts, and peace of mind in one app.</p>
               <div className="py-8">
                 <button className="bg-white text-[#123F7B] font-normal text-lg lg:text-xl px-6 lg:px-8 py-3 lg:py-4 rounded-full shadow-md hover:bg-white/90 flex items-center space-x-2">
-                  <span>Get The App</span>
+                  <Link to="https://expo.dev/artifacts/eas/orNCNRpXjoubePTVoCFTB5.apk"><span>Get The App</span></Link>
                   <RxArrowRight className="hidden lg:inline" />
                 </button>
               </div>

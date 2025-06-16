@@ -43,6 +43,12 @@ import {
   SEARCH_REPORTS_REQUEST,
   SEARCH_REPORTS_SUCCESS,
   SEARCH_REPORTS_FAIL,
+  TRANSFER_REPORT_REQUEST,
+  TRANSFER_REPORT_SUCCESS,
+  TRANSFER_REPORT_FAIL,
+  ARCHIVE_REPORTS_REQUEST,
+  ARCHIVE_REPORTS_SUCCESS,
+  ARCHIVE_REPORTS_FAIL,
 } from "../actiontypes/reportTypes";
 
 // Create Report
@@ -523,3 +529,37 @@ export const searchReports = ({ page = 1, limit = 10, query = '', status = '', t
   }
 };
 
+export const transferReport = (reportId, transferData) => async (dispatch) => {
+  try {
+    dispatch({ type: TRANSFER_REPORT_REQUEST });
+console.log('transferData: ', transferData);
+    const { data } = await axios.post(
+      `${server}/report/transfer/${reportId}`,
+      transferData,
+      { 
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        withCredentials: true 
+      }
+    );
+
+    dispatch({
+      type: TRANSFER_REPORT_SUCCESS,
+      payload: {
+        reportId,
+        transferData: data.data
+      }
+    });
+
+    return { success: true, data: data.data };
+  } catch (error) {
+    const message = error.response?.data?.msg || error.message;
+    dispatch({
+      type: TRANSFER_REPORT_FAIL,
+      payload: message
+    });
+    console.log(message)
+    return { success: false, error: message };
+  }
+};

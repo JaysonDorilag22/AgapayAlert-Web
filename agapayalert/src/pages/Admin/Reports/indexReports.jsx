@@ -13,10 +13,11 @@ const IndexReports = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const reportsResult = await dispatch(getReports(filters));
-      console.log("Index Reports Data:", reportsResult.data);
+      const cleanedFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, v]) => v !== "")
+      );
+      await dispatch(getReports(cleanedFilters));
     };
-
     fetchData();
   }, [dispatch, filters]);
 
@@ -25,12 +26,19 @@ const IndexReports = () => {
   };
 
   const handleFilterChange = (newFilters) => {
-    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters, page: 1 }));
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...newFilters,
+      page: 1, // Reset to first page on filter change
+    }));
   };
 
   const handleSearchChange = (query) => {
-    setSearchQuery(query);
-    setFilters((prevFilters) => ({ ...prevFilters, searchName: query, page: 1 }));
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      query, // Use 'query' as the key for backend compatibility
+      page: 1,
+    }));
   };
 
     // Filter reports assigned to the current user
@@ -51,6 +59,7 @@ const filteredReports =
           onPageChange={handlePageChange}
           onFilterChange={handleFilterChange}
           onSearchChange={handleSearchChange}
+          filters={filters}
         />
       </div>
     </AdminLayout>

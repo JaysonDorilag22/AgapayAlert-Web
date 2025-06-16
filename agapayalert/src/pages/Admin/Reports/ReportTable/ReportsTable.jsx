@@ -4,11 +4,21 @@ import { HiOutlineEye } from "react-icons/hi2";
 import { extractUniqueValues } from "@/utils/extractUniqueValues";
 import ReportDetailsModal from "@/components/ReportDetailsModal";
 import * as XLSX from "xlsx";
+import { FaSearch } from "react-icons/fa"; // Add this import
+import toastUtils from '@/utils/toastUtils';
 
-const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilterChange, onSearchChange }) => {
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [type, setType] = useState('');
+const ReportsTable = ({
+  reports,
+  totalPages,
+  currentPage,
+  onPageChange,
+  onFilterChange,
+  onSearchChange,
+  filters = {},
+}) => {
+  const ALL_STATUS_OPTIONS = ["Pending", "Assigned", "Under Investigation", "Resolved", "Transferred"];
+  const ALL_TYPE_OPTIONS = ["Absent", "Missing", "Abducted", "Kidnapped", "Hit-and-Run"];
+  const [search, setSearch] = useState(filters.query || "");
   const [statusOptions, setStatusOptions] = useState([]);
   const [typeOptions, setTypeOptions] = useState([]);
   const [selectedReportId, setSelectedReportId] = useState(null);
@@ -21,19 +31,33 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
     setTypeOptions(uniqueTypeValues);
   }, [reports]);
 
+  useEffect(() => {
+    setSearch(filters.query || "");
+  }, [filters]);
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     onSearchChange(search);
   };
 
   const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-    onFilterChange({ query: search, status: e.target.value, type });
+    onFilterChange({
+      ...filters,
+      status: e.target.value,
+      page: 1,
+    });
   };
 
   const handleTypeChange = (e) => {
-    setType(e.target.value);
-    onFilterChange({ query: search, status, type: e.target.value });
+    onFilterChange({
+      ...filters,
+      type: e.target.value,
+      page: 1,
+    });
   };
 
   const handleReportClick = (reportId) => {
@@ -80,14 +104,15 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
   };
 
   const handleCopyToClipboard = (text) => {
-    setTimeout(() => {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Copied to clipboard: ' + text);
-        }).catch((err) => {
-            console.error('Failed to copy text: ', err);
-        });
-    }, 100);
-};
+      setTimeout(() => {
+          navigator.clipboard.writeText(text).then(() => {
+              toastUtils('Copied to clipboard: ' + text, "success");
+          }).catch((err) => {
+              console.error('Failed to copy text: ', err);
+              toastUtils('Failed to copy text', "error");
+          });
+      }, 100);
+  };
 
 // Export to Excel handler
   const handleExportExcel = () => {
@@ -118,34 +143,34 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
   return (
     <div className="w-full">
       <div className="flex justify-start gap-4 mb-4">
-      {/* <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg">
+        <form onSubmit={handleSearchSubmit} className="relative w-full max-w-lg">
           <input
             type="text"
-            placeholder="Search by name"
+            placeholder="Search by Report ID or Name"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full px-2 py-1 border border-[#123F7B] rounded-full focus:outline-none"
           />
           <button type="submit" className="absolute right-0 top-0 mt-1 mr-2 bg-[#123F7B] text-white px-2 py-1 rounded-full">
             <FaSearch />
           </button>
-        </form> */}
-        <select value={status} onChange={handleStatusChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
+        </form>
+        {/* <select value={filters.status || ""} onChange={handleStatusChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
           <option value="">All Statuses</option>
-          {statusOptions.map((statusOption) => (
+          {ALL_STATUS_OPTIONS.map((statusOption) => (
             <option key={statusOption} value={statusOption}>
               {statusOption}
             </option>
           ))}
         </select>
-        <select value={type} onChange={handleTypeChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
+        <select value={filters.type || ""} onChange={handleTypeChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
           <option value="" className="">All Types</option>
-          {typeOptions.map((typeOption) => (
+          {ALL_TYPE_OPTIONS.map((typeOption) => (
             <option key={typeOption} value={typeOption}>
               {typeOption}
             </option>
           ))}
-        </select>
+        </select> */}
         <button
           onClick={handleExportExcel}
           className="bg-[#34A853] text-white px-4 py-2 rounded shadow font-semibold"

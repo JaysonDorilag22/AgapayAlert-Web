@@ -45,7 +45,6 @@ return (
                 </div>
                 <div className='flex flex-col space-y-2 place-items-start text-left text-[#123F7B] text-semibold'>
                     <Link to="/profile"><p>Profile</p></Link>
-                    <Link to="/"><p>Settings</p></Link>
                     {user?.roles[0] !== 'user' && (
                     <Link to="/admin/dashboard"><p>Dashboard</p></Link>
                     )}

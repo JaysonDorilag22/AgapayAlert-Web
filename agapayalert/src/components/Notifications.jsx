@@ -60,8 +60,8 @@ const getNotificationIcon = (type) => {
       };
     default:
       return {
-        icon: <img src={tup} alt='TUP' className='w-[50px] h-[50px] rounded-full' />,
-        bg: "",
+        icon: <BsFileEarmarkArrowUp size={24} className="text-[#123f7b]" />,
+        bg: "bg-[#123f7b]/10",
         color: "#123f7b"
       };
   }

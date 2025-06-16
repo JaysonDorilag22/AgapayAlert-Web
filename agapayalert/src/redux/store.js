@@ -9,6 +9,7 @@ import { dashboardReducer } from './reducers/dashboardReducer';
 import { broadcastReducer } from './reducers/broadcastReducer';
 import { finderReducer } from './reducers/finderReducer';
 import { notificationReducer } from './reducers/notificationReducer';
+import { policeStationReducer } from './reducers/policeStationReducer';
 
 const token = localStorage.getItem('token');
 console.log("token: ", token);
@@ -26,13 +27,14 @@ const store = configureStore({
     broadcast: broadcastReducer,
     finder: finderReducer,
     notification: notificationReducer, 
+    policeStation: policeStationReducer,
   }
 
 });
 
 //wanel haus
-export const server = "http://localhost:3000/api/v1";
+// export const server = "http://localhost:3000/api/v1";
 
-// export const server = "https://agapayalert-server.onrender.com/api/v1";
+export const server = "https://agapayalert-server.onrender.com/api/v1";
 
 export default store;

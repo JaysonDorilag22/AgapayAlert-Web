@@ -43,6 +43,12 @@ import {
     CLEAR_REPORTS,
     ADD_REPORT,
     UPDATE_REPORT,
+    TRANSFER_REPORT_REQUEST,
+    TRANSFER_REPORT_SUCCESS,
+    TRANSFER_REPORT_FAIL,
+    ARCHIVE_REPORTS_REQUEST,
+    ARCHIVE_REPORTS_SUCCESS,
+    ARCHIVE_REPORTS_FAIL,
   } from "../actiontypes/reportTypes";
   
   const initialState = {
@@ -339,7 +345,55 @@ import {
               ),
             };
 
-      // ...existing cases...
+      case TRANSFER_REPORT_REQUEST:
+      return { 
+        ...state, 
+        transferLoading: true, 
+        transferError: null 
+      };
+
+    case TRANSFER_REPORT_SUCCESS:
+      return {
+        ...state,
+        transferLoading: false,
+        // Remove the transferred report from the reports list
+        reports: state.reports.filter(report => report._id !== action.payload.reportId),
+        // Update userReports if it exists
+        userReports: {
+          ...state.userReports,
+          reports: state.userReports.reports.filter(report => report._id !== action.payload.reportId)
+        }
+      };
+
+    case TRANSFER_REPORT_FAIL:
+      return { 
+        ...state, 
+        transferLoading: false, 
+        transferError: action.payload 
+      };
+
+    // Archive Reports Cases
+    case ARCHIVE_REPORTS_REQUEST:
+      return { 
+        ...state, 
+        archiveLoading: true, 
+        archiveError: null 
+      };
+
+    case ARCHIVE_REPORTS_SUCCESS:
+      return {
+        ...state,
+        archiveLoading: false,
+        // You might want to refresh the reports list after archiving
+        // or filter out archived reports depending on your UI needs
+      };
+
+    case ARCHIVE_REPORTS_FAIL:
+      return { 
+        ...state, 
+        archiveLoading: false, 
+        archiveError: action.payload 
+      };
       default:
         return state;
     }

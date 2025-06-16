@@ -90,12 +90,12 @@ const NavBar = () => {
                           <p className="text-xs font-extralight pb-4">Help protect your loved ones and neighbors.</p>
                         </div>
                         <div className='items-center'>
-                          <Button className="bg-white border border-[#123F7B] text-[#123F7B] font-semibold text-base w-full px-4 py-4 rounded-md shadow-md hover:bg-[#123F7B]/10"><FaGoogle /> Sign in with Google</Button>
+                          {/* <Button className="bg-white border border-[#123F7B] text-[#123F7B] font-semibold text-base w-full px-4 py-4 rounded-md shadow-md hover:bg-[#123F7B]/10"><FaGoogle /> Sign in with Google</Button>
                           <div className='flex flex-row items-center space-x-4 pt-4'>
                             <div className='w-full h-px bg-gray-300'></div>
                             <p className='text-xs'>or</p>
                             <div className='w-full h-px bg-gray-300'></div>
-                          </div>
+                          </div> */}
                           <Formik
                             initialValues={initialValues}
                             validationSchema={validationSchema}
@@ -132,8 +132,13 @@ const NavBar = () => {
                           </Formik>
                         </div>
                         <div className='flex flex-row items-center pt-4'>
-                          <p className='text-xs pr-2'>Don't have an account?</p>
-                          <Link to="/" className="text-[#123F7B] font-semibold text-xs">Sign Up</Link>
+                          <p className='text-xs pr-2'>Forgot your password?</p>
+                          <Link to="/forgot-password"
+                                state={{ email: initialValues.email }}
+                                className="text-[#123F7B] font-semibold text-xs"
+                                >
+                                  Reset password 
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -227,8 +232,13 @@ const NavBar = () => {
                           </Formik>
                         </div>
                         <div className='flex flex-row items-center pt-4'>
-                          <p className='text-xs pr-2'>Don't have an account?</p>
-                          <Link to="/" className="text-[#123F7B] font-semibold text-xs">Sign Up</Link>
+                          <p className='text-xs pr-2'>Forgot your password?</p>
+                          <Link to="/forgot-password"
+                                state={{ email: initialValues.email }}
+                                className="text-[#123F7B] font-semibold text-xs"
+                                >
+                                  Reset password 
+                          </Link>
                         </div>
                       </div>
                     </div>

@@ -111,12 +111,12 @@ const ReportMainPage = () => {
                   </button>
                 </form>
               </div>
-              <div className='flex flex-row w-full'>
+              {/* <div className='flex flex-row w-full'>
                 <p className='text-md font-light text-white'>Haven't found them yet?</p>
                 <button onClick={() => handleReportClick('new')} className="flex items-center justify-center">
                     <p className="text-[#D46A79] text-md font-base pl-1">Report here.</p>
                 </button>
-              </div>
+              </div> */}
             </div>
             <div className='relative'>
               <img src={logowhite} className='absolute hidden lg:inline overflow-visible object-cover h-full w-full' />
