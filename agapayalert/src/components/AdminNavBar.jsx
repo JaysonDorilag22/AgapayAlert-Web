@@ -48,6 +48,12 @@ const AdminNavBar = () => {
                     <p>Dashboard</p>
                 </Link>
               </li>
+              <li className="py-2 px-4">
+                <Link to="/admin/analytics" className="flex flex-row justify-start place-items-center space-x-4">
+                    <MdOutlineAnalytics  className="" size={38} />
+                    <p>Analytics</p>
+                </Link>
+              </li>
               <li className={getLinkClass('/admin/reports')}>
                 <Link to="/admin/reports" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineInsertChart className="" size={38} />
@@ -58,12 +64,6 @@ const AdminNavBar = () => {
                 <Link to="/admin/police-station" className="flex flex-row justify-start place-items-center space-x-4">
                     <MdOutlineLocalPolice className="" size={38} />
                     <p>Police Stations</p>
-                </Link>
-              </li>
-              <li className="py-2 px-4">
-                <Link to="/admin/analytics" className="flex flex-row justify-start place-items-center space-x-4">
-                    <MdOutlineAnalytics  className="" size={38} />
-                    <p>Analytics</p>
                 </Link>
               </li>
               <li className="py-2 px-4">

@@ -28,68 +28,69 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-  let mounted = true;
+    let mounted = true;
 
-  const setupSocket = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.warn("No JWT token found in localStorage");
-      return;
-    }
-    const socket = await initializeSocket(token);
-    if (!socket) {
-      console.warn("Socket not initialized");
-      return;
-    }
-    socketRef.current = socket;
+    const setupSocket = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("No JWT token found in localStorage");
+        return;
+      }
+      const socket = await initializeSocket(token);
+      if (!socket) {
+        console.warn("Socket not initialized");
+        return;
+      }
+      socketRef.current = socket;
 
-    socket.on("connect", () => {
-      console.log("Socket connected successfully");
+      socket.on("connect", () => {
+        console.log("Socket connected successfully");
+        if (user?.policeStation) {
+          joinRoom(`policeStation_${user.policeStation}`);
+        }
+        if (user?.address?.city) {
+          joinRoom(`city_${user.address.city}`);
+        }
+        console.log("Socket initialized and rooms joined");
+
+        // Subscribe to events ONLY after socket is connected
+        subscribeToNewReports((data) => {
+          console.log("SOCKET EVENT: NEW_REPORT", data);
+          if (mounted) {
+            toastUtils("New report received!", "success");
+            dispatch({ type: "ADD_REPORT", payload: data.report });
+          }
+        });
+
+        subscribeToReportUpdates((data) => {
+          console.log("SOCKET EVENT: REPORT_UPDATED", data);
+          if (mounted) {
+            toastUtils("Report updated!", "info");
+            dispatch({ type: "UPDATE_REPORT", payload: data.report });
+          }
+        });
+      });
+    };
+
+    setupSocket();
+    loadData();
+
+    return () => {
+      mounted = false;
       if (user?.policeStation) {
-        joinRoom(`policeStation_${user.policeStation}`);
+        leaveRoom(`policeStation_${user.policeStation}`);
       }
       if (user?.address?.city) {
-        joinRoom(`city_${user.address.city}`);
+        leaveRoom(`city_${user.address.city}`);
       }
-      console.log("Socket initialized and rooms joined");
-    });
-
-    subscribeToNewReports((data) => {
-      console.log("SOCKET EVENT: NEW_REPORT", data); // <--- Add this
-      if (mounted) {
-        toastUtils("New report received!", "success");
-        dispatch({ type: "ADD_REPORT", payload: data.report });
+      unsubscribeFromReports();
+      unsubscribeFromUpdates();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
-    });
-
-    subscribeToReportUpdates((data) => {
-      console.log("SOCKET EVENT: REPORT_UPDATED", data); // <--- Add this
-      if (mounted) {
-        toastUtils("Report updated!", "info");
-        dispatch({ type: "UPDATE_REPORT", payload: data.report });
-      }
-    });
-  };
-
-  setupSocket();
-  loadData();
-
-  return () => {
-    mounted = false;
-    if (user?.policeStation) {
-      leaveRoom(`policeStation_${user.policeStation}`);
-    }
-    if (user?.address?.city) {
-      leaveRoom(`city_${user.address.city}`);
-    }
-    unsubscribeFromReports();
-    unsubscribeFromUpdates();
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    }
-  };
-}, [dispatch, user?.policeStation, user?.address?.city]);
+    };
+  }, [dispatch, user?.policeStation, user?.address?.city]);
 
   const filteredReports =
   user?.roles?.includes("police_admin")
@@ -175,12 +176,6 @@ const Dashboard = () => {
               </div>
             </div>
         </div>
-        <button
-          onClick={() => toastUtils("Test toast from Dashboard!", "success")}
-          style={{ position: "fixed", top: 10, right: 10, zIndex: 9999 }}
-        >
-          Test Toast
-        </button>
         <div 
           className="grid grid-row-2 gap-4 cursor-pointer relative"
           onMouseEnter={() => setHover(true)}

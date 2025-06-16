@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Dialog, DialogContent } from '../components/ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getReportDetails, updateUserReport, getReports } from '../redux/actions/reportActions';
 import { getFinderReportsByReportId } from '@/redux/actions/finderActions';
 import { unpublishBroadcast } from '@/redux/actions/broadcastActions';
-import { FaBroadcastTower, FaEyeSlash, FaEdit  } from 'react-icons/fa';
+import { FaBroadcastTower, FaEyeSlash, FaEdit, FaFilePdf  } from 'react-icons/fa';
+import { BsFileEarmarkPerson } from "react-icons/bs";
 import {
   Tabs,
   TabsContent,
@@ -28,6 +29,11 @@ import BroadcastReport  from './ReportDetails/BroadcastReport';
 import UpdateStatusReport from './ReportDetails/UpdateStatusReport';
 import { redirect } from 'react-router-dom';
 import toastUtils from '@/utils/toastUtils';
+import { useLocation } from "react-router-dom";
+import { useReportModal } from '../layouts/ReportModalProvider';
+import html2pdf from 'html2pdf.js';
+import ReportPDFView from './Admin/ReportPDFView';
+import MissingPosterPDF from './Admin/MissingPosterPDF';
 
 const ReportDetailsModal = ({ reportId, onClose }) => {
   const dispatch = useDispatch();
@@ -37,10 +43,40 @@ const ReportDetailsModal = ({ reportId, onClose }) => {
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [showUpdateStatus, setShowUpdateStatus] = useState(false); // State to toggle UpdateStatusReport
   const [localError, setLocalError] = useState(null);
+  const exportRef = useRef();
+  const pdfRef = useRef();
+  const missingPosterRef = useRef();
 
   useEffect(() => {
   loadReportDetails();
 }, [dispatch, reportId]);
+
+// Export handler for custom PDF
+  const handleExportPDF = () => {
+    if (!pdfRef.current) return;
+    html2pdf()
+      .from(pdfRef.current)
+      .set({
+        margin: 0.5,
+        filename: `report_${reportId}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      })
+      .save();
+  };
+
+  const handleExportMissingPDF = () => {
+  if (!missingPosterRef.current) return;
+  html2pdf()
+    .from(missingPosterRef.current)
+    .set({
+      margin: 0,
+      filename: `missing_${report._id}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
+    })
+    .save();
+  };
 
 const loadReportDetails = async (showLoadingState = true) => {
   try {
@@ -178,6 +214,7 @@ const handleCloseUpdateStatus = async (updateData) => {
         {report ? (
           <div className="p-6 overflow-auto max-h-[600px]">
             <h2 className="text-xl font-bold mb-2">Detailed Report</h2>
+            
             <div className="grid grid-cols-3 gap-12">
               <div className='col-start-1 col-end-2 m-1 p-1 rounded-lg shadow-lg overflow-hidden bg-[#123F7B]/5'>
                 <div className="flex flex-col items-center justify-center p-2">
@@ -188,6 +225,44 @@ const handleCloseUpdateStatus = async (updateData) => {
                     {getStatusTable(report.status)}
                   </div>
                   <div className="flex flex-row justify-between mt-4 text-md gap-4">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <button
+                              className="bg-[#2563EB] text-white p-4 rounded-xl flex items-center shadow-lg"
+                              onClick={handleExportPDF}
+                              type="button"
+                            >
+                              <FaFilePdf />
+                            </button>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className='text-xs font-light text-[#123f7b]'>Export this report as a PDF file</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    {report.type === "Missing" && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
+                              <button
+                                className="bg-red-600 text-white p-4 rounded-xl flex items-center shadow-lg"
+                                onClick={handleExportMissingPDF}
+                                type="button"
+                              >
+                                <BsFileEarmarkPerson className="" />
+                              </button>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className='text-xs font-light text-[#123f7b]'>Export a printable missing poster</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -227,6 +302,17 @@ const handleCloseUpdateStatus = async (updateData) => {
                         </Tooltip>
                       </TooltipProvider>
                     )}
+                  </div>
+                  <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+                    <ReportPDFView
+                      ref={pdfRef}
+                      report={report}
+                      finderReports={finderReports}
+                      formattedDate={formattedDate}
+                    />
+                  </div>
+                  <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+                    <MissingPosterPDF ref={missingPosterRef} report={report} />
                   </div>
                   <div className='m-4'>
                     <p className='text-[#D46A79]/70 text-lg font-semibold'>{report.type} Person</p>

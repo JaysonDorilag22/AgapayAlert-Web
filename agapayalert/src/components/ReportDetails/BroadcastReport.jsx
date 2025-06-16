@@ -12,6 +12,7 @@ import { FaUsers } from "react-icons/fa";
 import RadiusMap from "@/components/RadiusMap";
 import { addressService } from "@/services/addressService";
 import { publishBroadcast } from '@/redux/actions/broadcastActions';
+import showToast from "@/utils/toastUtils";
 
 export const BroadcastReport = ({ reportId, onClose, onSubmit }) => {
     const dispatch = useDispatch();
@@ -80,11 +81,10 @@ export const BroadcastReport = ({ reportId, onClose, onSubmit }) => {
     setBroadcastLoading(false);
 
     if (result.success) {
-      alert('Broadcast sent successfully!');
+      showToast('Broadcast sent successfully!', 'success');
       onClose();
     } else {
-      alert(`Failed to send broadcast: ${result.error}`);
-      alert(`Failed to send broadcast: ${broadcastType} ${scope}`);
+      showToast(`Failed to send broadcast: ${result.error || `${broadcastType} ${scope}`}`, 'error');
     }
   };
 

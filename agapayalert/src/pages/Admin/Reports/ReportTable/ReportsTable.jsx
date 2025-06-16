@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { HiOutlineEye } from "react-icons/hi2";
 import { extractUniqueValues } from "@/utils/extractUniqueValues";
 import ReportDetailsModal from "@/components/ReportDetailsModal";
+import * as XLSX from "xlsx";
 
 const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilterChange, onSearchChange }) => {
   const [search, setSearch] = useState('');
@@ -88,6 +89,32 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
     }, 100);
 };
 
+// Export to Excel handler
+  const handleExportExcel = () => {
+    // Prepare data for Excel
+    const data = reports.map((report) => ({
+      "Report ID": report.caseId,
+      "Type": report.type,
+      "Name": `${report.personInvolved.firstName} ${report.personInvolved.lastName}`,
+      "Date & Time Reported": new Date(report.createdAt).toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      }),
+      "Last Known Location": report.personInvolved.lastKnownLocation,
+      "Status": report.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Reports");
+
+    XLSX.writeFile(workbook, "reports.xlsx");
+  };
+
   return (
     <div className="w-full">
       <div className="flex justify-start gap-4 mb-4">
@@ -119,6 +146,12 @@ const ReportsTable = ({ reports, totalPages, currentPage, onPageChange, onFilter
             </option>
           ))}
         </select>
+        <button
+          onClick={handleExportExcel}
+          className="bg-[#34A853] text-white px-4 py-2 rounded shadow font-semibold"
+        >
+          Export to Excel
+        </button>
       </div>
       <table className="min-w-full bg-white rounded-2xl px-2 shadow-[#123F7B]/25 shadow-lg overflow-hidden">
         <thead className="bg-[#123F7B] text-white">

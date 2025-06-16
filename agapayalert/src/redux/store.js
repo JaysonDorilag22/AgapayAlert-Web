@@ -8,6 +8,7 @@ import { reportReducer } from './reducers/reportReducer';
 import { dashboardReducer } from './reducers/dashboardReducer';
 import { broadcastReducer } from './reducers/broadcastReducer';
 import { finderReducer } from './reducers/finderReducer';
+import { notificationReducer } from './reducers/notificationReducer';
 
 const token = localStorage.getItem('token');
 console.log("token: ", token);
@@ -24,6 +25,7 @@ const store = configureStore({
     dashboard: dashboardReducer,
     broadcast: broadcastReducer,
     finder: finderReducer,
+    notification: notificationReducer, 
   }
 
 });
