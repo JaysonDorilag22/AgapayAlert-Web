@@ -20,7 +20,7 @@ import {
 } from "./ui/tooltip";
 
 import { format } from 'date-fns';
-import { ReportInfo } from './ReportDetails/ReportInfo';
+import ReportInfo from './ReportDetails/ReportInfo';
 import { PersonalInfo } from './ReportDetails/PersonalInfo';
 import { PhysicalInfo } from './ReportDetails/PhysicalInfo';
 import { MediaInfo } from './ReportDetails/MediaInfo';
