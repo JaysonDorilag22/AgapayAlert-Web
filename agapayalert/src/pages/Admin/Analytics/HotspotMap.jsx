@@ -4,7 +4,6 @@ import { Bar } from "react-chartjs-2";
 import { getLocationHotspots } from "@/redux/actions/dashboardActions";
 import { REPORT_TYPE_OPTIONS } from "@/config/constants";
 import { addressService } from "@/services/addressService";
-// You need to provide a web MapComponent, e.g. GoogleMapReact or similar
 import MapComponent from "@/components/MapComponent";
 
 const HotspotMap = () => {
