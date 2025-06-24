@@ -13,7 +13,13 @@ import {
     GET_MONTHLY_TREND_FAIL,
     GET_LOCATION_HOTSPOTS_REQUEST,
     GET_LOCATION_HOTSPOTS_SUCCESS,
-    GET_LOCATION_HOTSPOTS_FAIL
+    GET_LOCATION_HOTSPOTS_FAIL,
+    GET_USER_DEMOGRAPHICS_REQUEST,
+    GET_USER_DEMOGRAPHICS_SUCCESS,
+    GET_USER_DEMOGRAPHICS_FAIL,
+    GET_OFFICER_RANKINGS_REQUEST,
+    GET_OFFICER_RANKINGS_SUCCESS,
+    GET_OFFICER_RANKINGS_FAIL
   } from '@/redux/actiontypes/dashboardTypes';
   
     
@@ -23,19 +29,25 @@ import {
       statusDistribution: null,
       monthlyTrend: null,
       locationHotspots: null,
+      userDemographics: null,
+      officerRankings: null,
       loading: {
         basic: false,
         type: false,
         status: false,
         monthly: false,
-        location: false
+        location: false,
+        demographics: false,
+        rankings: false
       },
       error: {
         basic: null,
         type: null,
         status: null,
         monthly: null,
-        location: null
+        location: null,
+        demographics: null,
+        rankings: null
       }
     };
     
@@ -141,7 +153,47 @@ import {
             error: { ...state.error, location: action.payload }
           };
     
-        default:
-          return state;
-      }
-    };
+        // User Demographics
+    case GET_USER_DEMOGRAPHICS_REQUEST:
+      return {
+        ...state,
+        loading: { ...state.loading, demographics: true },
+        error: { ...state.error, demographics: null }
+      };
+    case GET_USER_DEMOGRAPHICS_SUCCESS:
+      return {
+        ...state,
+        userDemographics: action.payload,
+        loading: { ...state.loading, demographics: false }
+      };
+    case GET_USER_DEMOGRAPHICS_FAIL:
+      return {
+        ...state,
+        loading: { ...state.loading, demographics: false },
+        error: { ...state.error, demographics: action.payload }
+      };
+
+    // Officer Rankings
+    case GET_OFFICER_RANKINGS_REQUEST:
+      return {
+        ...state,
+        loading: { ...state.loading, rankings: true },
+        error: { ...state.error, rankings: null }
+      };
+    case GET_OFFICER_RANKINGS_SUCCESS:
+      return {
+        ...state,
+        officerRankings: action.payload,
+        loading: { ...state.loading, rankings: false }
+      };
+    case GET_OFFICER_RANKINGS_FAIL:
+      return {
+        ...state,
+        loading: { ...state.loading, rankings: false },
+        error: { ...state.error, rankings: action.payload }
+      };
+
+    default:
+      return state;
+  }
+};

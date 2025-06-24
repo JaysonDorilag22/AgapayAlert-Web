@@ -15,8 +15,61 @@ import {
   GET_MONTHLY_TREND_FAIL,
   GET_LOCATION_HOTSPOTS_REQUEST,
   GET_LOCATION_HOTSPOTS_SUCCESS,
-  GET_LOCATION_HOTSPOTS_FAIL
+  GET_LOCATION_HOTSPOTS_FAIL,
+  GET_USER_DEMOGRAPHICS_REQUEST,
+  GET_USER_DEMOGRAPHICS_SUCCESS,
+  GET_USER_DEMOGRAPHICS_FAIL,
+  GET_OFFICER_RANKINGS_REQUEST,
+  GET_OFFICER_RANKINGS_SUCCESS,
+  GET_OFFICER_RANKINGS_FAIL
 } from '@/redux/actiontypes/dashboardTypes';
+
+// User Demographics
+export const getUserDemographics = (filters = {}) => async (dispatch) => {
+  try {
+    dispatch({ type: GET_USER_DEMOGRAPHICS_REQUEST });
+    let url = `${server}/charts/demographics`;
+    const params = new URLSearchParams(filters).toString();
+    if (params) url += `?${params}`;
+    const { data } = await axios.get(url, { withCredentials: true });
+    dispatch({
+      type: GET_USER_DEMOGRAPHICS_SUCCESS,
+      payload: data.data
+    });
+    return { success: true, data: data.data };
+  } catch (error) {
+    dispatch({
+      type: GET_USER_DEMOGRAPHICS_FAIL,
+      payload: error.response?.data?.error || error.message
+    });
+    return { success: false, error: error.message };
+  }
+};
+
+// Officer Rankings
+export const getOfficerRankings = () => async (dispatch) => {
+  try {
+    dispatch({ type: GET_OFFICER_RANKINGS_REQUEST });
+
+    const { data } = await axios.get(
+      `${server}/charts/officer-rankings`,
+      { withCredentials: true }
+    );
+
+    dispatch({
+      type: GET_OFFICER_RANKINGS_SUCCESS,
+      payload: data.data
+    });
+
+    return { success: true, data: data.data };
+  } catch (error) {
+    dispatch({
+      type: GET_OFFICER_RANKINGS_FAIL,
+      payload: error.response?.data?.error || error.message
+    });
+    return { success: false, error: error.message };
+  }
+};
 
 // Basic Analytics
 export const getBasicAnalytics = () => async (dispatch) => {

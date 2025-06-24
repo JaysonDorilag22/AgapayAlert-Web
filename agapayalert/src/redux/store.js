@@ -10,6 +10,7 @@ import { broadcastReducer } from './reducers/broadcastReducer';
 import { finderReducer } from './reducers/finderReducer';
 import { notificationReducer } from './reducers/notificationReducer';
 import { policeStationReducer } from './reducers/policeStationReducer';
+import { customPostReducer } from './reducers/customPostReducer';
 
 const token = localStorage.getItem('token');
 console.log("token: ", token);
@@ -28,6 +29,7 @@ const store = configureStore({
     finder: finderReducer,
     notification: notificationReducer, 
     policeStation: policeStationReducer,
+    customPosts: customPostReducer,
   }
 
 });

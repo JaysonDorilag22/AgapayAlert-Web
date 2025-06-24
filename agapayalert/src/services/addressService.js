@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { server } from '@/redux/store';
 
 const BASE_URL = 'https://psgc.gitlab.io/api';
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
@@ -41,11 +42,12 @@ export const addressService = {
   async getCities(searchTerm = '') {
     const cacheKey = 'cities';
     const cachedData = cache.get(cacheKey);
-    
+    const LOCAL_PROXY_URL = `${server}/proxy/cities`;
     try {
       let cities;
       if (!cachedData) {
-        const response = await axios.get(`${BASE_URL}/cities.json`);
+        // Use backend proxy for dev
+        const response = await axios.get(LOCAL_PROXY_URL);
         cities = response.data
           .map(city => ({
             label: cleanCityName(city.name),
@@ -76,11 +78,13 @@ export const addressService = {
 
     const cacheKey = `barangays_${cityCode}`;
     const cachedData = cache.get(cacheKey);
+    const LOCAL_BARANGAY_PROXY = `${server}/proxy/barangays/`;
 
     try {
       let barangays;
       if (!cachedData) {
-        const response = await axios.get(`${BASE_URL}/cities/${cityCode}/barangays.json`);
+        // Use backend proxy for dev
+        const response = await axios.get(`${LOCAL_BARANGAY_PROXY}${cityCode}`);
         barangays = response.data
           .map(barangay => ({
             label: barangay.name,

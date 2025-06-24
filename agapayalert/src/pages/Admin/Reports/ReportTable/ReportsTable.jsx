@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { HiOutlineEye } from "react-icons/hi2";
-import { extractUniqueValues } from "@/utils/extractUniqueValues";
 import ReportDetailsModal from "@/components/ReportDetailsModal";
+import ReportsFilterModal from "@/components/ReportsFilterModal";
 import * as XLSX from "xlsx";
-import { FaSearch } from "react-icons/fa"; // Add this import
+import { FaSearch } from "react-icons/fa";
 import toastUtils from '@/utils/toastUtils';
+import ReportsTablePDFView from '@/components/Admin/ReportsTablePDFView';
+import html2pdf from 'html2pdf.js';
 
 const ReportsTable = ({
   reports,
@@ -15,6 +17,7 @@ const ReportsTable = ({
   onFilterChange,
   onSearchChange,
   filters = {},
+  user,
 }) => {
   const ALL_STATUS_OPTIONS = ["Pending", "Assigned", "Under Investigation", "Resolved", "Transferred"];
   const ALL_TYPE_OPTIONS = ["Absent", "Missing", "Abducted", "Kidnapped", "Hit-and-Run"];
@@ -22,13 +25,29 @@ const ReportsTable = ({
   const [statusOptions, setStatusOptions] = useState([]);
   const [typeOptions, setTypeOptions] = useState([]);
   const [selectedReportId, setSelectedReportId] = useState(null);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const pdfRef = useRef();
+
+  const handleExportPDF = () => {
+    if (!pdfRef.current) return;
+    const opt = {
+      margin:       0.5,
+      filename:     'AgapayAlert-Reports.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(pdfRef.current).save();
+  };
 
   useEffect(() => {
-    const uniqueStatusValues = extractUniqueValues(reports, 'status');
-    setStatusOptions(uniqueStatusValues);
+    // const uniqueStatusValues = extractUniqueValues(reports, 'status');
+    // setStatusOptions(uniqueStatusValues);
 
-    const uniqueTypeValues = extractUniqueValues(reports, 'type');
-    setTypeOptions(uniqueTypeValues);
+    // const uniqueTypeValues = extractUniqueValues(reports, 'type');
+    // setTypeOptions(uniqueTypeValues);
+    setStatusOptions(ALL_STATUS_OPTIONS);
+    setTypeOptions(ALL_TYPE_OPTIONS);
   }, [reports]);
 
   useEffect(() => {
@@ -103,6 +122,17 @@ const ReportsTable = ({
     }
   };
 
+  const filterOptions = {
+  statusOptions: ALL_STATUS_OPTIONS,
+  typeOptions: typeOptions.length ? typeOptions : ALL_TYPE_OPTIONS,
+  // Add cityOptions, barangayOptions, policeStationOptions, genderOptions as needed
+  };
+
+  const handleModalSubmit = (newFilters) => {
+    console.log('Applied Filters:', newFilters); // Log the filters to the console
+    onFilterChange(newFilters);
+  };
+
   const handleCopyToClipboard = (text) => {
       setTimeout(() => {
           navigator.clipboard.writeText(text).then(() => {
@@ -155,28 +185,42 @@ const ReportsTable = ({
             <FaSearch />
           </button>
         </form>
-        {/* <select value={filters.status || ""} onChange={handleStatusChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
-          <option value="">All Statuses</option>
-          {ALL_STATUS_OPTIONS.map((statusOption) => (
-            <option key={statusOption} value={statusOption}>
-              {statusOption}
-            </option>
-          ))}
-        </select>
-        <select value={filters.type || ""} onChange={handleTypeChange} className="border border-[#123f7B] rounded-3xl px-2 py-1 text-sm">
-          <option value="" className="">All Types</option>
-          {ALL_TYPE_OPTIONS.map((typeOption) => (
-            <option key={typeOption} value={typeOption}>
-              {typeOption}
-            </option>
-          ))}
-        </select> */}
+        <button
+          onClick={() => setIsFilterModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded shadow font-semibold"
+        >
+          Filter
+        </button>
+        <ReportsFilterModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+          onSubmit={handleModalSubmit}
+          initialFilters={filters}
+          user={user} // Pass user roles if needed
+          options={filterOptions}
+        />
         <button
           onClick={handleExportExcel}
           className="bg-[#34A853] text-white px-4 py-2 rounded shadow font-semibold"
         >
           Export to Excel
         </button>
+        <button
+          onClick={handleExportPDF}
+          className="bg-[#123F7B] text-white px-4 py-2 rounded shadow font-semibold"
+        >
+          Export to PDF
+        </button>
+      </div>
+      {/* Hidden PDF view for html2pdf */}
+      <div style={{ display: 'none' }}>
+        <div ref={pdfRef}>
+          <ReportsTablePDFView
+            reports={reports}
+            totalReports={reports.length}
+            filters={filters}
+          />
+        </div>
       </div>
       <table className="min-w-full bg-white rounded-2xl px-2 shadow-[#123F7B]/25 shadow-lg overflow-hidden">
         <thead className="bg-[#123F7B] text-white">

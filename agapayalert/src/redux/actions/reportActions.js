@@ -91,8 +91,18 @@ export const getReports = (params = {}) => async (dispatch) => {
     const queryParams = new URLSearchParams({
       page: params.page || 1,
       limit: params.limit || 10,
+      ...(params.status && { status: params.status }),
       ...(params.type && { type: params.type }),
-      ...(params.query && { query: params.query }) // Add search query support
+      ...(params.startDate && { startDate: params.startDate }),
+      ...(params.endDate && { endDate: params.endDate }),
+      ...(params.ageCategory && { ageCategory: params.ageCategory }),
+      ...(params.city && { city: params.city }),
+      ...(params.barangay && { barangay: params.barangay }),
+      ...(params.policeStationId && { policeStationId: params.policeStationId }),
+      ...(params.gender && { gender: params.gender }),
+      ...(params.query && { query: params.query }),
+      ...(params.sortBy && { sortBy: params.sortBy }),
+      ...(params.sortOrder && { sortOrder: params.sortOrder }),
     }).toString();
 
     const url = `${server}/report/getReports?${queryParams}`;

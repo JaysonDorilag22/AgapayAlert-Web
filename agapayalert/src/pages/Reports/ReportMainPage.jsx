@@ -13,7 +13,7 @@ import IndexCreateReport from '../../components/CreateReport/IndexCreateReport';
 const ReportMainPage = () => {
   const dispatch = useDispatch();
   const { feed, loading, error } = useSelector((state) => state.reports);
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [page, setPage] = useState(1);
   const [searchParams, setSearchParams] = useState({
     searchName: '',
@@ -23,15 +23,13 @@ const ReportMainPage = () => {
   const [selectedReportId, setSelectedReportId] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const fetchData = async () => {
-        const result = await dispatch(getReportFeed({ page, limit: 10, ...searchParams }));
-        console.log("Fetched Reports:", result.data);
-      };
+    const fetchData = async () => {
+      const result = await dispatch(getReportFeed({ page, limit: 10, ...searchParams }));
+      console.log("Fetched Reports:", result.data);
+    };
 
-      fetchData();
-    }
-  }, [dispatch, isAuthenticated, page, searchParams]);
+    fetchData();
+  }, [dispatch, page, searchParams]);
 
   const formatDateTime = (date, time) => {
     const dateStr = format(new Date(date), 'MMM dd, yyyy');
@@ -74,20 +72,12 @@ const ReportMainPage = () => {
     });
   };
 
-    const handleReportClick = (reportId) => {
+  const handleReportClick = (reportId) => {
     setSelectedReportId(reportId);
   };
-    const handleCloseModal = () => {
+  const handleCloseModal = () => {
     setSelectedReportId(null);
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center">
-        <p className="text-4xl font-bold mb-4">Sign in to view the list of reports</p>
-      </div>
-    );
-  }
 
   return (
     <div className="h-screen">
@@ -133,16 +123,10 @@ const ReportMainPage = () => {
               <select id="city" name="city" value={searchParams.city} onChange={handleFilterChange} className="border border-[#123F7B] rounded-full px-2 py-1">
                 <option value="">All</option>
                 <option value="Taguig">Taguig</option>
-                {/* Add more cities as needed */}
-              </select>
-              <label htmlFor="type" className="mr-2 ml-4">Type:</label>
-              <select id="type" name="type" value={searchParams.type} onChange={handleFilterChange} className="border border-[#123F7B] rounded-full px-2 py-1">
-                <option value="">All</option>
-                <option value="Missing">Missing</option>
-                <option value="Abducted">Abducted</option>
-                <option value="Kidnapped">Kidnapped</option>
-                <option value="Hit-and-Run">Hit-and-Run</option>
-                {/* Add more types as needed */}
+                <option value="Makati">Makati</option>
+                <option value="Pasay">Pasay</option>
+                <option value="Paranaque">Paranaque</option>
+                <option value="Pateros">Pateros</option>
               </select>
             </div>
           </div>
@@ -151,60 +135,62 @@ const ReportMainPage = () => {
         {error && <p className="text-red-500">{error}</p>}
         {feed.reports && feed.reports.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {feed.reports.map((report) => (
-              <motion.div
-                key={report.id}
-                className="bg-[#123F7B]/5 p-4 rounded-md shadow-md"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 50 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className='relative'>
-                  <img src={report.photo} alt={report.personName} className="w-full h-48 object-cover rounded-3xl" />
-                  <div className='absolute bottom-4 left-2 bg-white px-2 py-2 rounded-md border border-[#D46A79]'>
-                    <p className='text-[#D46A79] text-xs font-base'>{report.type}</p>
-                  </div>
-                </div>
-                <div className="pt-2 space-y-2">
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <p className="cursor-context-menu text-[#D46A79] text-sm font-extralight flex items-center"><FaClock className="mr-1" /> {timeSinceLastSeen(report.lastSeen.date)}</p>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
-                      <p className="text-[#123F7B] text-xs font-extralight">Last seen: {formatDateTime(report.lastSeen.date, report.lastSeen.time)}</p>
-                    </HoverCardContent>
-                  </HoverCard>
-                  <h2 className="text-2xl font-semibold">{report.personName}</h2>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <p className="cursor-context-menu text-[#123F7B] text-sm font-light flex items-center pb-2"><FaMapMarkerAlt className="mr-1" /> {report.lastKnownLocation}</p>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
-                      <p className="text-[#123F7B] text-xs font-extralight place-self-center">Last known location</p>
-                    </HoverCardContent>
-                  </HoverCard>
-                </div>
-                <div className="pt-4">
-                  <div className="flex flex-row justify-start space-x-2 place-items-center">
-                    <div className=''>
-                      <img src={report.reporter?.avatar} alt='Missing' className="h-10 w-10 rounded-full" />
-                    </div>
-                    <div className='flex flex-col space-y-0 place-items-center'>
-                      <p className="text-xs font-semibold">{report.reporter?.name}</p>
-                      <HoverCard>
-                        <HoverCardTrigger>
-                          <p className="cursor-context-menu text-[#123F7B] text-xs font-extralight">{formatDateTime(report.reportedAt)}</p>
-                        </HoverCardTrigger>
-                        <HoverCardContent>
-                          <p className="text-[#123F7B] text-xs font-extralight place-self-center">Date reported</p>
-                        </HoverCardContent>
-                      </HoverCard>
+            {feed.reports
+              .filter((report) => report.type === "Missing")
+              .map((report) => (
+                <motion.div
+                  key={report.id}
+                  className="bg-[#123F7B]/5 p-4 rounded-md shadow-md"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className='relative'>
+                    <img src={report.photo} alt={report.personName} className="w-full h-48 object-cover rounded-3xl" />
+                    <div className='absolute bottom-4 left-2 bg-white px-2 py-2 rounded-md border border-[#D46A79]'>
+                      <p className='text-[#D46A79] text-xs font-base'>{report.type}</p>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="pt-2 space-y-2">
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <p className="cursor-context-menu text-[#D46A79] text-sm font-extralight flex items-center"><FaClock className="mr-1" /> {timeSinceLastSeen(report.lastSeen.date)}</p>
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <p className="text-[#123F7B] text-xs font-extralight">Last seen: {formatDateTime(report.lastSeen.date, report.lastSeen.time)}</p>
+                      </HoverCardContent>
+                    </HoverCard>
+                    <h2 className="text-2xl font-semibold">{report.personName}</h2>
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <p className="cursor-context-menu text-[#123F7B] text-sm font-light flex items-center pb-2"><FaMapMarkerAlt className="mr-1" /> {report.lastKnownLocation}</p>
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <p className="text-[#123F7B] text-xs font-extralight place-self-center">Last known location</p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                  <div className="pt-4">
+                    <div className="flex flex-row justify-start space-x-2 place-items-center">
+                      <div className=''>
+                        <img src={report.reporter?.avatar} alt='Missing' className="h-10 w-10 rounded-full" />
+                      </div>
+                      <div className='flex flex-col space-y-0 place-items-center'>
+                        <p className="text-xs font-semibold">{report.reporter?.name}</p>
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <p className="cursor-context-menu text-[#123F7B] text-xs font-extralight">{formatDateTime(report.reportedAt)}</p>
+                          </HoverCardTrigger>
+                          <HoverCardContent>
+                            <p className="text-[#123F7B] text-xs font-extralight place-self-center">Date reported</p>
+                          </HoverCardContent>
+                        </HoverCard>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
           </div>
         ) : (
           !loading && <p>No reports found.</p>

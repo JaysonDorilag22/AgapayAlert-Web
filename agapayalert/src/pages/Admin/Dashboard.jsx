@@ -92,9 +92,12 @@ const Dashboard = () => {
     };
   }, [dispatch, user?.policeStation, user?.address?.city]);
 
-  const filteredReports =
-  user?.roles?.includes("police_admin")
-    ? reports || []
+  const filteredReports = user?.roles?.includes("super_admin")
+  ? reports || []
+  : user?.roles?.includes("police_admin")
+    ? reports?.filter(
+        (report) => report.location?.address?.city === user?.address?.city
+      ) || []
     : reports?.filter(
         (report) => report.assignedOfficer?._id === user?._id
       ) || [];

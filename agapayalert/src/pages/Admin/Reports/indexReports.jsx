@@ -19,6 +19,7 @@ const IndexReports = () => {
       await dispatch(getReports(cleanedFilters));
     };
     fetchData();
+    console.log("pearasfasdf: ",filters)
   }, [dispatch, filters]);
 
   const handlePageChange = (page) => {
@@ -42,18 +43,13 @@ const IndexReports = () => {
   };
 
     // Filter reports assigned to the current user
-const filteredReports =
-  user?.roles?.includes("police_admin")
-    ? reports || []
-    : reports?.filter(
-        (report) => report.assignedOfficer?._id === user?._id
-      ) || [];
+// const filteredReports = reports || [];
 
   return (
     <AdminLayout>
       <div>
         <ReportsTable
-          reports={filteredReports}
+          reports={reports || []} // Ensure reports is an array
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}
