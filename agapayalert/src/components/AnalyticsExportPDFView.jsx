@@ -1,102 +1,179 @@
 import React, { forwardRef } from "react";
-import { Bar, Pie, Line } from "react-chartjs-2";
 
-// This component is designed for PDF export of the analytics dashboard.
-// It receives all summary, chart, and filter data as props and renders a print-friendly layout.
-// Usage: <AnalyticsExportPDFView ref={exportRef} summary={...} trends={...} composition={...} geolocation={...} relationships={...} filters={...} role={...} />
+// One-Pager PDF Export for AgapayAlert Analytics
+const AnalyticsExportPDFView = forwardRef(({ summary, exportedBy, filters }, ref) => {
+  // Helper: get value or fallback
+  const get = (obj, path, fallback = "-") => {
+    try {
+      return path.split(".").reduce((o, k) => (o && o[k] !== undefined ? o[k] : fallback), obj);
+    } catch {
+      return fallback;
+    }
+  };
+  // Extract summary fields
+  const overview = summary?.overview || {};
+  const mostCommonType = summary?.mostCommonType || {};
+  const unresolvedPercent = summary?.unresolvedPercent;
+  const avgResolutionTime = overview?.avgResolutionTime;
+  const resolutionTimes = summary?.resolutionTimes || [];
+  const longPendingCases = summary?.crossCategory?.longPendingCases || [];
+  const topCities = summary?.topCities || [];
+  const topBarangays = summary?.topBarangays || [];
+  const alarmingChildText = summary?.alarmingChildText;
+  const ageCategory = summary?.ageCategory || [];
+  const gender = summary?.gender || [];
+  const genderDifferential = summary?.genderDifferential;
+  const monthlyTrends = summary?.crossCategory?.monthlyTrends || {};
+  const trendDirection = overview?.trendDirection;
+  const repeatReportersArr = summary?.crossCategory?.repeatReportersArr || [];
+  const repeatAreasArr = summary?.crossCategory?.repeatAreasArr || [];
+  const summaryParagraph = summary?.summaryParagraph;
 
-const DashboardCard = ({ title, value, icon, color, subtext }) => (
-  <div
-    style={{
-      background: "#fff",
-      borderLeft: `8px solid ${color}`,
-      borderRadius: 12,
-      boxShadow: "0 2px 8px #123F7B22",
-      padding: 16,
-      minWidth: 160,
-      minHeight: 90,
-      margin: 8,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-    }}
-  >
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-      {icon && <span style={{ fontSize: 24 }}>{icon}</span>}
-      <span style={{ fontWeight: 600, color: "#123F7B", fontSize: 16 }}>{title}</span>
-    </div>
-    <div style={{ fontSize: 28, fontWeight: 700, color: "#123F7B" }}>{value}</div>
-    {subtext && <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>{subtext}</div>}
-  </div>
-);
+  // Find spike in reports (max in monthlyTrends)
+  let spikeMonth = "-", spikeCount = "-";
+  if (monthlyTrends && Object.keys(monthlyTrends).length > 0) {
+    const maxMonth = Object.entries(monthlyTrends).reduce((max, curr) => curr[1] > max[1] ? curr : max, ["", 0]);
+    spikeMonth = maxMonth[0];
+    spikeCount = maxMonth[1];
+  }
+  // Fastest resolution (min value in resolutionTimes)
+  const fastestResolution = resolutionTimes.length ? Math.min(...resolutionTimes.filter(x => typeof x === 'number' && !isNaN(x))) : null;
 
-const SectionTitle = ({ children }) => (
-  <h2 style={{ color: "#123F7B", fontSize: 22, fontWeight: 700, margin: "24px 0 12px 0" }}>{children}</h2>
-);
+  // Format date
+  const now = new Date();
+  const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 
-const AnalyticsExportPDFView = forwardRef(({
-  summary,
-  trends,
-  composition,
-  geolocation,
-  relationships,
-  filters,
-  role
-}, ref) => {
+  // --- Reporting Period ---
+  let reportingPeriod = "All Time";
+  if (filters && (filters.startDate || filters.endDate)) {
+    const start = filters.startDate ? new Date(filters.startDate) : null;
+    const end = filters.endDate ? new Date(filters.endDate) : null;
+    const startStr = start ? start.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : null;
+    const endStr = end ? end.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : null;
+    if (startStr && endStr) reportingPeriod = `from ${startStr} to ${endStr}`;
+    else if (startStr) reportingPeriod = `from ${startStr}`;
+    else if (endStr) reportingPeriod = `up to ${endStr}`;
+  }
+
+  // --- Export Details Filters List ---
+  const filterList = filters ? Object.entries(filters)
+    .filter(([k, v]) => v && k !== 'startDate' && k !== 'endDate')
+    .map(([k, v]) => `${k[0].toUpperCase() + k.slice(1)}: ${Array.isArray(v) ? v.join(", ") : v}`)
+    .join(", ") : "None";
+
+  // --- Location Hotspots Table ---
+  // Use repeatAreasArr: [{city, barangay, count}]
+  const locationHotspotsRows = repeatAreasArr && repeatAreasArr.length > 0
+    ? repeatAreasArr.slice(0, 5).map((area, idx) => (
+        <tr key={idx}>
+          <td>{area.city || '-'}</td>
+          <td>{area.barangay || '-'}</td>
+          <td>{area.count ?? '-'}</td>
+        </tr>
+      ))
+    : <tr><td colSpan={3}>No data</td></tr>;
+
+  // --- Repeat Incident Areas List ---
+  const repeatIncidentAreasList = repeatAreasArr && repeatAreasArr.length > 0
+    ? repeatAreasArr.slice(0, 3).map((area, idx) => (
+        <li key={idx}>{area.city || '-'}, {area.barangay || '-'}</li>
+      ))
+    : <li>No data</li>;
+
+  // --- Repeat Reporters ---
+  const topReporter = repeatReportersArr && repeatReportersArr.length > 0 ? repeatReportersArr[0] : null;
+
   return (
-    <div ref={ref} style={{ background: "#f5f7fa", color: "#222", fontFamily: "Arial, sans-serif", padding: 32, minWidth: 900 }}>
-      <h1 style={{ color: "#123F7B", fontSize: 32, fontWeight: 800, marginBottom: 8 }}>AgapayAlert Analytics Report</h1>
-      <div style={{ fontSize: 16, color: "#555", marginBottom: 16 }}>
-        <b>Role:</b> {role} &nbsp;|&nbsp; <b>Date:</b> {new Date().toLocaleString()}
+    <div ref={ref} style={{ background: "#fff", color: "#222", fontFamily: "Arial, sans-serif", padding: 24, minWidth: 0, maxWidth: 600, margin: '0 auto' }}>
+      <div style={{ fontSize: 24, fontWeight: 800, color: "#123F7B", marginBottom: 8 }}>📝 AgapayAlert One-Pager Report Summary</div>
+      <div style={{ fontSize: 14, marginBottom: 8 }}>
+        <b>Reporting Period:</b> {reportingPeriod}<br />
+        <b>Generated By:</b> {exportedBy || "-"}<br />
+        <b>Date Generated:</b> {dateStr}
       </div>
-      {/* Filters summary */}
-      <div style={{ background: "#fff", borderRadius: 8, padding: 16, marginBottom: 24, fontSize: 15 }}>
-        <b>Filters Applied:</b><br />
-        {Object.entries(filters || {}).map(([key, val]) => (
-          <span key={key} style={{ marginRight: 16 }}>
-            <b>{key}:</b> {Array.isArray(val) ? val.join(", ") : val || "All"}
-          </span>
-        ))}
+      <div style={{ height: 16 }} />
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#123F7B", margin: "18px 0 8px 0" }}>📊 Key Statistics</div>
+      <table style={{ width: 600, fontSize: 15, borderCollapse: "collapse", marginBottom: 14 }}>
+        <tbody>
+          <tr><td>Total Reports</td><td><b>{overview.totalReports ?? '-'}</b></td></tr>
+          <tr><td>Most Common Type</td><td>{mostCommonType.label ? `${mostCommonType.label}${mostCommonType.percent ? ` (${mostCommonType.percent}%)` : ''}` : '-'}</td></tr>
+          <tr><td>Unresolved Cases</td><td>{unresolvedPercent ? `${unresolvedPercent}%` : '-'}</td></tr>
+          <tr><td>Avg. Resolution Time</td><td>{avgResolutionTime ? `${avgResolutionTime} hours` : '-'}</td></tr>
+          <tr><td>Fastest Resolution</td><td>{fastestResolution !== null && fastestResolution !== undefined ? `${fastestResolution.toFixed(1)} hours` : '-'}</td></tr>
+          <tr><td>Long-Pending Cases</td><td>{longPendingCases.length}</td></tr>
+          <tr><td>Top Reporting City</td><td>{topCities[0]?.label || '-'}</td></tr>
+          <tr><td>Most Affected Barangay</td><td>{topBarangays[0]?.label || '-'}</td></tr>
+        </tbody>
+      </table>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#123F7B", margin: "18px 0 8px 0" }}>📍 Location Hotspots</div>
+      <table style={{ width: '100%', fontSize: 15, borderCollapse: 'collapse', marginBottom: 8, tableLayout: 'fixed' }}>
+        <thead>
+          <tr style={{ background: "#f0f4fa" }}>
+            <th style={{ textAlign: 'left', padding: '8px', width: '33%' }}>City</th>
+            <th style={{ textAlign: 'left', padding: '8px', width: '33%' }}>Barangay</th>
+            <th style={{ textAlign: 'right', padding: '8px', width: '34%' }}>Reports</th>
+          </tr>
+        </thead>
+        <tbody>
+          {repeatAreasArr && repeatAreasArr.length > 0
+            ? repeatAreasArr.slice(0, 5).map((area, idx) => (
+                <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <td style={{ textAlign: 'left', padding: '8px' }}>{area.city || '-'}</td>
+                  <td style={{ textAlign: 'left', padding: '8px' }}>{area.barangay || '-'}</td>
+                  <td style={{ textAlign: 'right', padding: '8px', fontWeight: 600 }}>{area.count ?? '-'}</td>
+                </tr>
+              ))
+            : <tr><td colSpan={3} style={{ textAlign: 'center', padding: '8px' }}>No data</td></tr>}
+        </tbody>
+      </table>
+      {alarmingChildText && (
+        <div style={{ color: "#D46A79", fontWeight: 600, margin: "8px 0 16px 0" }}>⚠️ Note: {alarmingChildText}</div>
+      )}
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#123F7B", margin: "18px 0 8px 0" }}>🧑‍🤝‍🧑 Demographics Breakdown</div>
+      <div style={{ fontSize: 17, fontWeight: 600, margin: "8px 0 4px 0" }}>📌 Age Group Distribution</div>
+      <ul style={{ margin: 0, paddingLeft: 24 }}>
+        {ageCategory && ageCategory.length > 0 ? ageCategory.map((a, i) => (
+          <li key={i}>{a.label}: {a.percent}%</li>
+        )) : <li>No data</li>}
+      </ul>
+      <div style={{ fontSize: 17, fontWeight: 600, margin: "8px 0 4px 0" }}>📌 Gender</div>
+      <ul style={{ margin: 0, paddingLeft: 24 }}>
+        {gender && gender.length > 0 ? gender.map((g, i) => (
+          <li key={i}>{g.label}: {g.percent}%</li>
+        )) : <li>No data</li>}
+      </ul>
+      {genderDifferential && (
+        <div style={{ color: "#D46A79", fontWeight: 600, margin: "8px 0 16px 0" }}>⚠️ Gender Gap Note: {genderDifferential}</div>
+      )}
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#123F7B", margin: "18px 0 8px 0" }}>📈 Trends & Observations</div>
+      <div style={{ fontSize: 16, marginBottom: 8 }}>
+        <b>📅 Spike in Reports:</b> {spikeMonth !== '-' ? `${spikeMonth} with ${spikeCount} reports` : '-'}<br />
+        <b>📉 Trend Direction:</b> {trendDirection || '-'}<br />
+        <b>🧍 Repeat Reporters:</b> {topReporter ? `Top user submitted ${topReporter.count} reports` : '-'}<br />
+        <b>📍 Repeat Incident Areas:</b><br />
+        <ul style={{ margin: 0, paddingLeft: 24 }}>
+          {repeatIncidentAreasList}
+        </ul>
       </div>
-      {/* Summary Panel */}
-      <SectionTitle>Summary</SectionTitle>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {summary?.cards?.map((card, idx) => (
-          <DashboardCard key={idx} {...card} />
-        ))}
+      <div style={{ fontSize: 17, fontWeight: 600, margin: "18px 0 8px 0" }}>🧾 Summary Paragraph</div>
+      <div style={{ fontSize: 15, background: "#f8fafc", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+        {summaryParagraph || "No summary available."}
       </div>
-      {/* Trends Section */}
-      {trends && (
-        <>
-          <SectionTitle>Report Trends</SectionTitle>
-          {trends.line && <Line data={trends.line.data} options={trends.line.options} />}
-          {trends.bar && <Bar data={trends.bar.data} options={trends.bar.options} />}
-        </>
-      )}
-      {/* Composition Section */}
-      {composition && (
-        <>
-          <SectionTitle>Report Composition</SectionTitle>
-          {composition.pie && <Pie data={composition.pie.data} options={composition.pie.options} />}
-          {composition.stackedBar && <Bar data={composition.stackedBar.data} options={composition.stackedBar.options} />}
-        </>
-      )}
-      {/* Geolocation Section */}
-      {geolocation && (
-        <>
-          <SectionTitle>Geolocation Insights</SectionTitle>
-          {/* You can render map images or summary tables here for PDF */}
-          {geolocation.mapImage && <img src={geolocation.mapImage} alt="Heatmap" style={{ width: 600, margin: 16 }} />}
-        </>
-      )}
-      {/* Relationships Section */}
-      {relationships && (
-        <>
-          <SectionTitle>Relationships & Distribution</SectionTitle>
-          {relationships.scatter && <Bar data={relationships.scatter.data} options={relationships.scatter.options} />}
-          {relationships.dot && <Bar data={relationships.dot.data} options={relationships.dot.options} />}
-        </>
-      )}
+      {/* Export Details Section */}
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#123F7B", margin: "24px 0 8px 0" }}>📤 Export Details</div>
+      <div style={{ fontSize: 15, marginBottom: 4 }}>
+        <b>Filter Applied:</b>
+        <span style={{ marginLeft: 8 }}>{filterList || "None"}</span>
+      </div>
+      <div style={{ fontSize: 15, marginBottom: 4 }}>
+        <b>Exported by:</b> {exportedBy || "-"}
+      </div>
+      <div style={{ fontSize: 15, marginBottom: 4 }}>
+        <b>Format:</b> PDF
+      </div>
+      <div style={{ fontSize: 15, marginBottom: 16 }}>
+        <b>Date of Export:</b> {dateStr}
+      </div>
       <div style={{ marginTop: 32, color: "#888", fontSize: 13, textAlign: "right" }}>
         Generated by AgapayAlert Analytics Dashboard
       </div>

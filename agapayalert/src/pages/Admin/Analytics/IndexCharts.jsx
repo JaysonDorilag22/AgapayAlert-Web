@@ -264,8 +264,10 @@ const IndexCharts = () => {
   const roleArr = useSelector((state) => state.auth.user?.roles);
   const role = Array.isArray(roleArr) ? roleArr[0] : roleArr || "user";
   const userDemographics = useSelector((state) => state.dashboard.userDemographics);
+  const user = useSelector((state) => state.auth.user);
   const [demographicsFilters, setDemographicsFilters] = useState({});
   const [demographicsLoading, setDemographicsLoading] = useState(false);
+  const exportedBy = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : role;
 
   console.log('role:', role);
 
@@ -349,7 +351,7 @@ const IndexCharts = () => {
         margin: 0.5,
         filename: "analytics-export.pdf",
         html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" }, // <-- set to portrait
       })
       .save();
   };
@@ -548,6 +550,7 @@ const IndexCharts = () => {
       : null,
   };
   const filtersExport = demographicsFilters;
+  const filters = userDemographics?.filters?.appliedFilters || {};
 
   // --- Main Render ---
   return (
@@ -579,11 +582,9 @@ const IndexCharts = () => {
       <div style={{ display: "none" }}>
         <AnalyticsExportPDFView
           ref={exportRef}
-          summary={summaryExport}
-          trends={trendsExport}
-          composition={compositionExport}
-          filters={filtersExport}
-          role={role}
+          summary={summary}
+          exportedBy={exportedBy}
+          filters={filters}
         />
       </div>
     </AdminLayout>
