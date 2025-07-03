@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserList, createUserWithRole, updateUserDetails, deleteUser } from "@/redux/actions/userActions";
 import { getPoliceStations } from "@/redux/actions/policeStationActions";
 import toastUtils from "@/utils/toastUtils";
-import { FaPlus, FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaUsers, FaTrophy } from "react-icons/fa";
+import OfficerRankings from "./OfficerRankings";
 
 // Modal component for create/edit user
 function UserModal({
@@ -251,6 +252,9 @@ const indexUsers = () => {
   const { users = [], loading } = useSelector((state) => state.user);
   const { policeStations = [] } = useSelector((state) => state.policeStation);
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState("users");
+
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -426,58 +430,95 @@ const indexUsers = () => {
   return (
     <AdminLayout>
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <button
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => {
-              setShowCreateModal(true);
-              resetForm();
-            }}
-          >
-            <FaPlus /> Add User
-          </button>
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab("users")}
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                  activeTab === "users"
+                    ? "border-[#123F7B] text-[#123F7B]"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <FaUsers className="text-lg" />
+                  User Management
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveTab("rankings")}
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                  activeTab === "rankings"
+                    ? "border-[#123F7B] text-[#123F7B]"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <FaTrophy className="text-lg" />
+                  Officer Rankings
+                </div>
+              </button>
+            </nav>
+          </div>
         </div>
 
-        {/* Filter Badges */}
-        <div className="flex gap-2 mb-4">
-          {USER_ROLES.map((role) => (
-            <button
-              key={role.value}
-              className={`px-4 py-2 rounded-full border text-sm font-medium ${
-                activeFilter === role.value
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-700 border-gray-200"
-              }`}
-              onClick={() => setActiveFilter(role.value)}
-            >
-              {role.label}
-            </button>
-          ))}
-        </div>
+        {/* Tab Content */}
+        {activeTab === "users" && (
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <button
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  setShowCreateModal(true);
+                  resetForm();
+                }}
+              >
+                <FaPlus /> Add User
+              </button>
+            </div>
 
-        {/* Search */}
-        <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4 max-w-md">
-          <FaSearch className="text-gray-400" />
-          <input
-            className="flex-1 ml-2 bg-transparent outline-none"
-            placeholder="Search users..."
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-          />
-        </div>
+            {/* Filter Badges */}
+            <div className="flex gap-2 mb-4">
+              {USER_ROLES.map((role) => (
+                <button
+                  key={role.value}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium ${
+                    activeFilter === role.value
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-700 border-gray-200"
+                  }`}
+                  onClick={() => setActiveFilter(role.value)}
+                >
+                  {role.label}
+                </button>
+              ))}
+            </div>
 
-        {/* Table */}
-        <div className="w-full">
-          <table className="min-w-full bg-white rounded-2xl px-2 shadow-[#123F7B]/25 shadow-lg overflow-hidden">
-            <thead className="bg-[#123F7B] text-white">
-              <tr>
-                <th className="py-2 px-4 text-start">Profile</th>
-                <th className="py-2 px-4 text-start">Name</th>
-                <th className="py-2 px-4 text-start">Email</th>
-                <th className="py-2 px-4 text-start">Role</th>
-                <th className="py-2 px-4 text-start">Station</th>
-                <th className="py-2 px-4 text-start">Action</th>
-              </tr>
+            {/* Search */}
+            <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4 max-w-md">
+              <FaSearch className="text-gray-400" />
+              <input
+                className="flex-1 ml-2 bg-transparent outline-none"
+                placeholder="Search users..."
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+              />
+            </div>
+
+            {/* Table */}
+            <div className="w-full">
+              <table className="min-w-full bg-white rounded-2xl px-2 shadow-[#123F7B]/25 shadow-lg overflow-hidden">
+                <thead className="bg-[#123F7B] text-white">
+                  <tr>
+                    <th className="py-2 px-4 text-start">Profile</th>
+                    <th className="py-2 px-4 text-start">Name</th>
+                    <th className="py-2 px-4 text-start">Email</th>
+                    <th className="py-2 px-4 text-start">Role</th>
+                    <th className="py-2 px-4 text-start">Station</th>
+                    <th className="py-2 px-4 text-start">Action</th>
+                  </tr>
             </thead>
             <tbody className="text-start">
               {loading ? (
@@ -541,6 +582,15 @@ const indexUsers = () => {
             </tbody>
           </table>
         </div>
+          </div>
+        )}
+
+        {/* Officer Rankings Tab */}
+        {activeTab === "rankings" && (
+          <div>
+            <OfficerRankings />
+          </div>
+        )}
       </div>
 
       {/* Create Modal */}

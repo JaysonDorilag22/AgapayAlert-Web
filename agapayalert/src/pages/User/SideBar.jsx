@@ -50,8 +50,8 @@ const SideBar = () => {
         : <IoDocumentOutline className="" />,
       tooltip: 'View your reports',
     },
-    // Only show settings tab if user.role is "user"
-    ...(user?.role !== "user"
+    // Only show settings tab if user.roles[0] is "user"
+    ...(user?.roles?.[0] !== "user"
       ? [{
           to: '/profile/settings',
           isActive: location.pathname === '/profile/settings',

@@ -37,33 +37,6 @@ const HotspotMap = () => {
     user: user
   });
 
-  // Function to load initial data with role-based filters
-  const loadInitialData = useCallback(async () => {
-    if (!user || !user._id) {
-      console.log("HotspotMap - User not loaded yet, skipping initial data load");
-      return;
-    }
-
-    const activeFilters = {};
-    
-    // Role-based filtering
-    if (isPoliceAdmin() && user.city) {
-      activeFilters.city = user.city;
-      console.log("HotspotMap - Police admin initial load with city filter:", user.city);
-    } else if (isPoliceOfficer() && user.assignedOfficerId) {
-      activeFilters.assignedOfficerId = user.assignedOfficerId;
-      console.log("HotspotMap - Police officer initial load with officer filter:", user.assignedOfficerId);
-    }
-
-    console.log("HotspotMap - Initial load filters:", activeFilters);
-
-    try {
-      await dispatch(getLocationHotspots(activeFilters));
-    } catch (error) {
-      console.error("Initial load error:", error);
-    }
-  }, [user, dispatch]);
-
   // Initialize role-based filters when user data loads
   useEffect(() => {
     if (user && user._id) {
@@ -81,9 +54,9 @@ const HotspotMap = () => {
       }
       
       // Initial load of data with role-based filters
-      loadInitialData();
+      handleApplyFilters();
     }
-  }, [user?._id, user?.city, user?.assignedOfficerId, loadInitialData]);
+  }, [user?._id, user?.city, user?.assignedOfficerId]);
 
   // Fetch cities on mount
   useEffect(() => {

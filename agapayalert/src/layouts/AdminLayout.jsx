@@ -16,13 +16,15 @@ const AdminLayout = ({ children }) => {
   }, [location.pathname]);
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-gray-50">
       <AdminNavBar />
-      <div className="flex-1 ml-[350px]">
+      <div className="flex-1 ml-80 min-w-0">
         <AdminTopNavBar />
-        <div className="mt-24 p-4">
-          {children}
-        </div>
+        <main className="mt-16 p-6">
+          <div className="max-w-full">
+            {children}
+          </div>
+        </main>
       </div>
       {/* Global Report Details Modal */}
       {isOpen && (

@@ -22,6 +22,12 @@ const ReportsFilterModal = ({
   const [policeStationError, setPoliceStationError] = useState(null);
   const [citySearch, setCitySearch] = useState("");
 
+  // Role-based access control
+  const userRole = user?.roles?.[0]; // Get first role from roles array
+  const isPoliceOfficer = userRole === 'police_officer';
+  const isPoliceAdmin = userRole === 'police_admin';
+  const isSuperAdmin = userRole === 'super_admin';
+
   // Get police stations from Redux
   const policeStationList = useSelector(state => state.policeStationList);
   const { loading: policeStationReduxLoading, error: policeStationReduxError, data: policeStationData } = policeStationList || {};
@@ -145,13 +151,27 @@ const ReportsFilterModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const filtersToSend = {
-      ...localFilters,
-      city: Array.isArray(localFilters.city) ? localFilters.city.join(',') : localFilters.city,
-      policeStation: Array.isArray(localFilters.policeStation) ? localFilters.policeStation.join(',') : localFilters.policeStation,
-      barangay: Array.isArray(localFilters.barangay) ? localFilters.barangay.join(',') : localFilters.barangay,
-      gender: Array.isArray(localFilters.gender) ? localFilters.gender.join(',') : localFilters.gender,
+    
+    // Apply role-based restrictions before submitting
+    let filtersToSend = { ...localFilters };
+    
+    if (isPoliceAdmin && user?.city) {
+      // Police Admin: force city to their assigned city
+      filtersToSend.city = user.city;
+    } else if (isPoliceOfficer && user?._id) {
+      // Police Officer: force assigned officer filter
+      filtersToSend.assignedOfficerId = user._id;
+    }
+    
+    // Format arrays as comma-separated strings for backend compatibility
+    filtersToSend = {
+      ...filtersToSend,
+      city: Array.isArray(filtersToSend.city) ? filtersToSend.city.join(',') : filtersToSend.city,
+      policeStation: Array.isArray(filtersToSend.policeStation) ? filtersToSend.policeStation.join(',') : filtersToSend.policeStation,
+      barangay: Array.isArray(filtersToSend.barangay) ? filtersToSend.barangay.join(',') : filtersToSend.barangay,
+      gender: Array.isArray(filtersToSend.gender) ? filtersToSend.gender.join(',') : filtersToSend.gender,
     };
+    
     onSubmit(filtersToSend);
     onClose();
   };
@@ -168,7 +188,40 @@ const ReportsFilterModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Filter Reports</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Filter Reports</h2>
+          {/* Role-based access indicator */}
+          {isPoliceOfficer && (
+            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+              Your Reports Only
+            </span>
+          )}
+          {isPoliceAdmin && user?.city && (
+            <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-1 rounded-full">
+              {user.city} City Only
+            </span>
+          )}
+        </div>
+        
+        {/* Role-based access information */}
+        {(isPoliceAdmin || isPoliceOfficer) && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <svg className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <div className="text-sm text-blue-700">
+                {isPoliceOfficer && (
+                  <p>You can only view and filter reports that are assigned to you. Some filters may be restricted.</p>
+                )}
+                {isPoliceAdmin && user?.city && (
+                  <p>You can only view and filter reports from <strong>{user.city}</strong>. The city filter is automatically set and cannot be changed.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Status Multi-select */}
           <div>
@@ -202,30 +255,56 @@ const ReportsFilterModal = ({
               ))}
             </div>
           </div>
-          {/* City Multi-select (searchable) */}
+          {/* City Multi-select (searchable) - Role-based restrictions */}
           <div>
-            <label className="font-semibold">City</label>
-            <input
-              type="text"
-              placeholder="Search city..."
-              className="border rounded px-2 py-1 w-full mb-2"
-              value={citySearch}
-              onChange={e => setCitySearch(e.target.value)}
-            />
-            <div className="flex flex-wrap gap-2 mt-1 max-h-32 overflow-y-auto">
-              {cityOptions
-                .filter(city => !citySearch || city.label.toLowerCase().includes(citySearch.toLowerCase()))
-                .map(city => (
-                  <button
-                    type="button"
-                    key={city.value}
-                    className={`px-3 py-1 rounded-full border ${localFilters.city?.includes(city.value) ? "bg-blue-600 text-white" : "bg-gray-100"}`}
-                    onClick={() => handleMultiSelect("city", city.value)}
-                  >
-                    {city.label}
-                  </button>
-                ))}
+            <div className="flex items-center justify-between">
+              <label className="font-semibold">City</label>
+              {isPoliceAdmin && user?.city && (
+                <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                  🔒 Locked to {user.city}
+                </span>
+              )}
             </div>
+            
+            {isPoliceAdmin && user?.city ? (
+              // Police Admin: Show locked city filter
+              <div className="mt-2">
+                <div className="px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg text-indigo-800 text-sm">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium">{user.city}</span>
+                    <span className="text-xs opacity-75">(automatically applied)</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Super Admin: Show normal city filter
+              <>
+                <input
+                  type="text"
+                  placeholder="Search city..."
+                  className="border rounded px-2 py-1 w-full mb-2 mt-1"
+                  value={citySearch}
+                  onChange={e => setCitySearch(e.target.value)}
+                />
+                <div className="flex flex-wrap gap-2 mt-1 max-h-32 overflow-y-auto">
+                  {cityOptions
+                    .filter(city => !citySearch || city.label.toLowerCase().includes(citySearch.toLowerCase()))
+                    .map(city => (
+                      <button
+                        type="button"
+                        key={city.value}
+                        className={`px-3 py-1 rounded-full border ${localFilters.city?.includes(city.value) ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                        onClick={() => handleMultiSelect("city", city.value)}
+                      >
+                        {city.label}
+                      </button>
+                    ))}
+                </div>
+              </>
+            )}
           </div>
           {/* Barangay Multi-select (searchable) */}
           <div>
@@ -369,9 +448,34 @@ const ReportsFilterModal = ({
               </select>
             </div>
           </div>
+          
+          {/* Role-based footer information */}
+          {(isPoliceAdmin || isPoliceOfficer) && (
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  {isPoliceOfficer 
+                    ? "Filters will be applied to your assigned reports only"
+                    : `Filters will be applied to ${user?.city || 'your city'} reports only`
+                  }
+                </span>
+              </div>
+            </div>
+          )}
+          
           <div className="flex justify-end gap-2 mt-4">
             <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-gray-200">Cancel</button>
-            <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-semibold">Apply Filters</button>
+            <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-semibold">
+              Apply Filters
+              {(isPoliceAdmin || isPoliceOfficer) && (
+                <span className="ml-1 text-xs opacity-75">
+                  ({isPoliceOfficer ? 'Your Reports' : user?.city || 'City'})
+                </span>
+              )}
+            </button>
           </div>
         </form>
       </div>

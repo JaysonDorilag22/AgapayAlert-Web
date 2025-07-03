@@ -88,6 +88,9 @@ export const getReports = (params = {}) => async (dispatch) => {
   try {
     dispatch({ type: GET_REPORTS_REQUEST });
 
+    console.log('=== DEBUG: Redux getReports Action ===');
+    console.log('- Raw params received:', params);
+
     const queryParams = new URLSearchParams({
       page: params.page || 1,
       limit: params.limit || 10,
@@ -100,17 +103,21 @@ export const getReports = (params = {}) => async (dispatch) => {
       ...(params.barangay && { barangay: params.barangay }),
       ...(params.policeStationId && { policeStationId: params.policeStationId }),
       ...(params.gender && { gender: params.gender }),
+      ...(params.assignedOfficerId && { assignedOfficerId: params.assignedOfficerId }),
       ...(params.query && { query: params.query }),
       ...(params.sortBy && { sortBy: params.sortBy }),
       ...(params.sortOrder && { sortOrder: params.sortOrder }),
     }).toString();
 
     const url = `${server}/report/getReports?${queryParams}`;
+    
+    console.log('- Final URL:', url);
+    console.log('- Query params string:', queryParams);
 
     const { data } = await axios.get(url, {
       withCredentials: true
     });
-    console.log('data: ', data);
+    console.log('- API Response data:', data);
 
     dispatch({
       type: GET_REPORTS_SUCCESS,
@@ -127,6 +134,7 @@ export const getReports = (params = {}) => async (dispatch) => {
     return { success: true, data: data.data };
   } catch (error) {
     const message = error.response?.data?.msg || error.message;
+    console.error('❌ Redux getReports error:', error);
     dispatch({
       type: GET_REPORTS_FAIL,
       payload: message

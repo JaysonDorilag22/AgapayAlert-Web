@@ -47,14 +47,15 @@ export const getUserDemographics = (filters = {}) => async (dispatch) => {
 };
 
 // Officer Rankings
-export const getOfficerRankings = () => async (dispatch) => {
+export const getOfficerRankings = (filters = {}) => async (dispatch) => {
   try {
     dispatch({ type: GET_OFFICER_RANKINGS_REQUEST });
 
-    const { data } = await axios.get(
-      `${server}/charts/officer-rankings`,
-      { withCredentials: true }
-    );
+    let url = `${server}/charts/officer-rankings`;
+    const params = new URLSearchParams(filters).toString();
+    if (params) url += `?${params}`;
+
+    const { data } = await axios.get(url, { withCredentials: true });
 
     dispatch({
       type: GET_OFFICER_RANKINGS_SUCCESS,
@@ -173,14 +174,14 @@ export const getMonthlyTrend = () => async (dispatch) => {
 };
 
 // Location Hotspots
-export const getLocationHotspots = () => async (dispatch) => {
+export const getLocationHotspots = (filters = {}) => async (dispatch) => {
   try {
     dispatch({ type: GET_LOCATION_HOTSPOTS_REQUEST });
+    let url = `${server}/charts/location-hotspots`;
+    const params = new URLSearchParams(filters).toString();
+    if (params) url += `?${params}`;
 
-    const { data } = await axios.get(
-      `${server}/charts/location-hotspots`,
-      { withCredentials: true }
-    );
+    const { data } = await axios.get(url, { withCredentials: true });
 
     dispatch({
       type: GET_LOCATION_HOTSPOTS_SUCCESS,

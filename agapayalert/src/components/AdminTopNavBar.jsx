@@ -57,19 +57,17 @@ const AdminTopNavBar = () => {
       };
 
   return (
-    <div className="fixed top-0 right-0 w-[calc(100%-22rem)] h-16 bg-white flex items-center justify-between p-4 pr-12 z-40">
+    <div className="fixed top-0 right-0 left-80 h-16 bg-white flex items-center justify-between px-6 z-40">
       <div className='flex flex-col justify-start -space-y-1'>
-        <h1 className="text-md font-bold">{getPageName()}</h1>
+        <h1 className="text-lg font-bold text-[#123F7B]">{getPageName()}</h1>
         <div className='flex flex-row space-x-2'>
             <p className="text-xs font-bold text-[#D46A79]">{currentDate.toLocaleDateString('en-US', { weekday: 'long' })}</p>
-            <p className="text-xs font-base">{formatDate(currentDate)}</p>
+            <p className="text-xs font-base text-gray-600">{formatDate(currentDate)}</p>
         </div>
       </div>
-      <div className='flex flex-row space-x-8 justify-between'>
+      <div className='flex flex-row space-x-6 items-center'>
         <Notifications />
-        <div className="place-items-center">
         <Profile user={user} handleLogout={handleLogout} />
-        </div>
       </div>
     </div>
   );
