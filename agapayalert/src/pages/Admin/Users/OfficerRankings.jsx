@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOfficerRankings } from '@/redux/actions/dashboardActions';
-import { FaTrophy, FaMedal, FaStar, FaChartLine, FaFilter, FaDownload, FaSort, FaBullseye } from 'react-icons/fa';
+import { FaTrophy, FaMedal, FaStar, FaChartLine, FaFilter, FaDownload, FaSort, FaBullseye, FaQuestionCircle, FaInfoCircle } from 'react-icons/fa';
 import { MdTrendingUp, MdTrendingDown, MdOutlineSpeed, MdOutlineAssignment } from 'react-icons/md';
 import { BiTime } from 'react-icons/bi';
 import { BsAward, BsBarChart } from 'react-icons/bs';
@@ -30,6 +30,7 @@ const OfficerRankings = () => {
     endDate: ''
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [showMetricsGuide, setShowMetricsGuide] = useState(false);
   const [selectedOfficer, setSelectedOfficer] = useState(null);
 
   // Role-based access control
@@ -193,6 +194,49 @@ const OfficerRankings = () => {
     return <span className="text-[#123F7B] font-bold">#{index + 1}</span>;
   };
 
+  const getMetricsGuideData = () => [
+    {
+      title: "Performance Score",
+      icon: <FaTrophy className="text-yellow-500" />,
+      description: "Overall effectiveness rating from 0-100",
+      calculation: "Combines resolution rate (40%), response time (30%), case complexity handling (20%), and team collaboration (10%)",
+      goodScore: "90+ = Excellent, 70-89 = Good, 50-69 = Average, <50 = Needs Improvement",
+      example: "Officer with 85% resolution rate + fast response times = ~82 points"
+    },
+    {
+      title: "Resolution Rate", 
+      icon: <FaBullseye className="text-green-500" />,
+      description: "Percentage of assigned cases successfully closed",
+      calculation: "(Resolved Cases ÷ Total Assigned Cases) × 100",
+      goodScore: "80%+ is excellent, 60-79% is good, 40-59% is average",
+      example: "15 resolved out of 20 assigned = 75% resolution rate"
+    },
+    {
+      title: "Average Resolution Time",
+      icon: <BiTime className="text-blue-500" />,
+      description: "How quickly cases are resolved on average",
+      calculation: "Sum of all resolution times ÷ Number of resolved cases",
+      goodScore: "Under 48 hours is excellent, 48-96 hours is good",
+      example: "Cases took 24h, 36h, 60h to resolve = 40h average"
+    },
+    {
+      title: "Workload Efficiency",
+      icon: <MdOutlineSpeed className="text-purple-500" />,
+      description: "How many cases handled per month",
+      calculation: "Total cases assigned in the current month",
+      goodScore: "15+ cases/month is high, 10-14 is good, 5-9 is average", 
+      example: "Officer assigned 18 cases this month = 18 efficiency score"
+    },
+    {
+      title: "Specialization Rate",
+      icon: <FaStar className="text-orange-500" />,
+      description: "Success rate in officer's area of expertise",
+      calculation: "(Specialized cases resolved ÷ Total specialized cases) × 100",
+      goodScore: "85%+ shows strong expertise in that case type",
+      example: "8 missing person cases resolved out of 10 assigned = 80% specialization rate"
+    }
+  ];
+
   if (!hasAccess()) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
@@ -287,6 +331,12 @@ const OfficerRankings = () => {
           </div>
           <div className="flex gap-3">
             <button
+              onClick={() => setShowMetricsGuide(!showMetricsGuide)}
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
+            >
+              <FaQuestionCircle /> How Metrics Work
+            </button>
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors"
             >
@@ -304,7 +354,7 @@ const OfficerRankings = () => {
 
         {/* Department Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white/10 rounded-lg p-4">
+          <div className="bg-white/10 rounded-lg p-4 group relative">
             <div className="flex items-center gap-3">
               <MdOutlineAssignment className="text-2xl" />
               <div>
@@ -312,8 +362,14 @@ const OfficerRankings = () => {
                 <p className="text-xl font-bold">{departmentSummary.totalOfficers || 0}</p>
               </div>
             </div>
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <FaQuestionCircle className="text-white/60 text-xs cursor-help" />
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+              Number of active officers with case assignments
+            </div>
           </div>
-          <div className="bg-white/10 rounded-lg p-4">
+          <div className="bg-white/10 rounded-lg p-4 group relative">
             <div className="flex items-center gap-3">
               <FaBullseye className="text-2xl" />
               <div>
@@ -321,8 +377,14 @@ const OfficerRankings = () => {
                 <p className="text-xl font-bold">{departmentSummary.avgResolutionRate || 0}%</p>
               </div>
             </div>
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <FaQuestionCircle className="text-white/60 text-xs cursor-help" />
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+              Average percentage of cases successfully resolved across all officers
+            </div>
           </div>
-          <div className="bg-white/10 rounded-lg p-4">
+          <div className="bg-white/10 rounded-lg p-4 group relative">
             <div className="flex items-center gap-3">
               <BiTime className="text-2xl" />
               <div>
@@ -330,8 +392,14 @@ const OfficerRankings = () => {
                 <p className="text-xl font-bold">{departmentSummary.avgResolutionTime || 0}h</p>
               </div>
             </div>
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <FaQuestionCircle className="text-white/60 text-xs cursor-help" />
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+              Average time taken to close cases across all officers
+            </div>
           </div>
-          <div className="bg-white/10 rounded-lg p-4">
+          <div className="bg-white/10 rounded-lg p-4 group relative">
             <div className="flex items-center gap-3">
               <FaTrophy className="text-2xl" />
               <div>
@@ -341,9 +409,81 @@ const OfficerRankings = () => {
                 </p>
               </div>
             </div>
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <FaQuestionCircle className="text-white/60 text-xs cursor-help" />
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+              Officer with the highest performance score this period
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Metrics Guide Panel */}
+      {showMetricsGuide && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <FaInfoCircle className="text-[#123F7B] text-xl" />
+              <h3 className="text-lg font-semibold text-[#123F7B]">How Performance Metrics Work</h3>
+            </div>
+            <button 
+              onClick={() => setShowMetricsGuide(false)}
+              className="text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {getMetricsGuideData().map((metric, index) => (
+              <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-3">
+                  {metric.icon}
+                  <h4 className="font-semibold text-[#123F7B]">{metric.title}</h4>
+                </div>
+                
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-gray-700 font-medium mb-1">What it measures:</p>
+                    <p className="text-gray-600">{metric.description}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-700 font-medium mb-1">How it's calculated:</p>
+                    <p className="text-gray-600">{metric.calculation}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-700 font-medium mb-1">Good performance:</p>
+                    <p className="text-green-600">{metric.goodScore}</p>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-gray-700 font-medium mb-1">Example:</p>
+                    <p className="text-blue-700 text-xs">{metric.example}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <FaInfoCircle className="text-yellow-600 mt-1 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium text-yellow-800 mb-1">Important Notes:</p>
+                <ul className="text-yellow-700 space-y-1 text-xs">
+                  <li>• Metrics are calculated based on cases assigned within the selected time period</li>
+                  <li>• Performance scores are updated daily and may fluctuate based on new case assignments</li>
+                  <li>• Specialization rates only appear for officers with 5+ cases in a specific category</li>
+                  <li>• Rankings consider both quantity and quality of work to ensure fair evaluation</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filters Panel */}
       {showFilters && (
@@ -579,11 +719,61 @@ const OfficerRankings = () => {
               <tr>
                 <th className="w-16 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
                 <th className="w-48 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Officer</th>
-                <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
-                <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cases</th>
-                <th className="w-28 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resolution</th>
-                <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Efficiency</th>
-                <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialization</th>
+                <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    Performance
+                    <div className="group relative">
+                      <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help text-xs" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                        Overall score (0-100) based on multiple factors
+                      </div>
+                    </div>
+                  </div>
+                </th>
+                <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    Cases
+                    <div className="group relative">
+                      <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help text-xs" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                        Total assigned cases (R=Resolved, I=Investigating, P=Pending)
+                      </div>
+                    </div>
+                  </div>
+                </th>
+                <th className="w-28 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    Resolution
+                    <div className="group relative">
+                      <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help text-xs" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                        Success rate % and average time to resolve
+                      </div>
+                    </div>
+                  </div>
+                </th>
+                <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    Efficiency
+                    <div className="group relative">
+                      <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help text-xs" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                        Cases handled per month
+                      </div>
+                    </div>
+                  </div>
+                </th>
+                <th className="w-32 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1">
+                    Specialization
+                    <div className="group relative">
+                      <FaQuestionCircle className="text-gray-400 hover:text-gray-600 cursor-help text-xs" />
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                        Area of expertise and success rate in that area
+                      </div>
+                    </div>
+                  </div>
+                </th>
                 <th className="w-24 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>

@@ -360,14 +360,14 @@ const ComprehensiveReportsExportView = React.forwardRef(({ reports = [], allRepo
         {/* Enhanced Header Section with Better Information Architecture */}
         <div className="landscape-header" style={{ pageBreakAfter: "avoid", pageBreakInside: "avoid" }}>
           {/* Main Title with Visual Hierarchy */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-4 space-y-2">
             <h1 className="text-3xl font-bold text-[#123F7B] mb-2 tracking-wide" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700 }}>
               🛡️ AGAPAY ALERT
             </h1>
-            <div className="text-xl font-semibold text-gray-700 mb-1" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            <div className="text-xl font-semibold text-gray-700 mb-8" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
               Comprehensive Reports Dashboard
             </div>
-            <div className="h-1 w-24 bg-gradient-to-r from-[#123F7B] to-[#7B9ACC] mx-auto rounded"></div>
+            <div className="h-1 w-full bg-gradient-to-r from-[#123F7B] to-[#7B9ACC] mx-auto rounded"></div>
           </div>
           
           {/* Metadata Grid */}
@@ -387,38 +387,203 @@ const ComprehensiveReportsExportView = React.forwardRef(({ reports = [], allRepo
           </div>
           
           {/* Enhanced Applied Filters with Visual Indicators */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border-l-4 border-[#123F7B]" style={{ pageBreakInside: "avoid" }}>
-            <h3 className="font-bold text-sm mb-3 text-[#123F7B]" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+          <div style={{ 
+            background: "linear-gradient(to right, #f9fafb, #eff6ff)", 
+            padding: "16px", 
+            borderRadius: "8px", 
+            borderLeft: "4px solid #123F7B",
+            pageBreakInside: "avoid"
+          }}>
+            <h3 style={{ 
+              fontWeight: "600", 
+              fontSize: "14px", 
+              marginBottom: "12px", 
+              color: "#123F7B",
+              fontFamily: "'Poppins', sans-serif"
+            }}>
               🔍 Applied Filters & Scope
             </h3>
-            <div className="grid grid-cols-2 gap-3 text-xs" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              <div className="space-y-2">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>Status:</strong> {getFilterLabel(filters?.status, "All Statuses")}
+            <div style={{ 
+              display: "flex", 
+              flexWrap: "wrap", 
+              gap: "24px", 
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: "12px"
+            }}>
+              {/* Left Column */}
+              <div style={{ 
+                flex: "1", 
+                minWidth: "300px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px"
+              }}>
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "60px" }}>Status:</strong>
+                    <span style={{ color: "#4B5563" }}>{getFilterLabel(filters?.status, "All Statuses")}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>Type:</strong> {getFilterLabel(filters?.type, "All Types")}
+                
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "60px" }}>Type:</strong>
+                    <span style={{ color: "#4B5563" }}>{getFilterLabel(filters?.type, "All Types")}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>City:</strong> {getFilterLabel(filters?.city, "All Cities")}
+                
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "60px" }}>City:</strong>
+                    <span style={{ color: "#4B5563" }}>{getFilterLabel(filters?.city, "All Cities")}</span>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>Barangay:</strong> {getFilterLabel(filters?.barangay, "All Barangays")}
+              
+              {/* Right Column */}
+              <div style={{ 
+                flex: "1", 
+                minWidth: "300px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px"
+              }}>
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "80px" }}>Barangay:</strong>
+                    <span style={{ color: "#4B5563" }}>{getFilterLabel(filters?.barangay, "All Barangays")}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>Gender:</strong> {getFilterLabel(filters?.gender, "All Genders")}
+                
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "70px" }}>Gender:</strong>
+                    <span style={{ color: "#4B5563" }}>{getFilterLabel(filters?.gender, "All Genders")}</span>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span className="w-2 h-2 bg-[#123F7B] rounded-full" style={{ width: "8px", height: "8px", backgroundColor: "#123F7B", borderRadius: "50%", marginRight: "8px" }}></span>
-                  <strong>Date Range:</strong> {filters?.startDate && filters?.endDate ? 
-                    `${formatDate(filters.startDate)} - ${formatDate(filters.endDate)}` : "All Dates"}
+                
+                <div style={{ 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  minHeight: "20px",
+                  lineHeight: "1.2"
+                }}>
+                  <div style={{ 
+                    width: "8px", 
+                    height: "8px", 
+                    backgroundColor: "#123F7B", 
+                    borderRadius: "50%", 
+                    marginRight: "12px",
+                    marginTop: "6px",
+                    flexShrink: 0
+                  }}></div>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "6px",
+                    width: "100%"
+                  }}>
+                    <strong style={{ color: "#123F7B", minWidth: "100px" }}>Date Range:</strong>
+                    <span style={{ color: "#4B5563" }}>
+                      {filters?.startDate && filters?.endDate ? 
+                        `${formatDate(filters.startDate)} - ${formatDate(filters.endDate)}` : "All Dates"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -79,7 +79,14 @@ const IndexReports = () => {
       
       console.log('📋 Final filters being sent to API:', cleanedFilters);
       
-      await dispatch(getReports(cleanedFilters));
+      const result = await dispatch(getReports(cleanedFilters));
+      
+      console.log('=== DEBUG: API Call Result ===');
+      console.log('- Success:', result?.success);
+      console.log('- Data keys:', result?.data ? Object.keys(result.data) : 'none');
+      console.log('- Reports count:', result?.data?.reports?.length || 0);
+      console.log('- Total reports:', result?.data?.totalReports || 0);
+      console.log('- Has reports in result:', !!result?.data?.reports && result.data.reports.length > 0);
     };
     fetchData();
     console.log("Current filters: ", filters);

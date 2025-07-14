@@ -101,26 +101,53 @@ const ReportsFilterModal = ({
   }, [localFilters.city, dispatch, cityOptions]);
 
   useEffect(() => {
-    setLocalFilters({
-      sortBy: initialFilters.sortBy || "createdAt",
-      sortOrder: initialFilters.sortOrder || "desc",
-      ...initialFilters,
+    // Convert comma-separated strings back to arrays for UI display
+    const processedFilters = { ...initialFilters };
+    
+    // Convert string filters back to arrays for multi-select UI
+    const arrayFields = ['status', 'type', 'city', 'policeStation', 'barangay', 'gender'];
+    arrayFields.forEach(field => {
+      if (processedFilters[field] && typeof processedFilters[field] === 'string') {
+        processedFilters[field] = processedFilters[field].split(',').map(s => s.trim()).filter(s => s);
+      }
     });
+    
+    setLocalFilters({
+      sortBy: processedFilters.sortBy || "createdAt",
+      sortOrder: processedFilters.sortOrder || "desc",
+      ...processedFilters,
+    });
+    
+    console.log('=== FILTER MODAL INIT DEBUG ===');
+    console.log('Initial filters received:', initialFilters);
+    console.log('Processed filters for UI:', processedFilters);
   }, [initialFilters, isOpen]);
 
   // Helper for multi-select
   const handleMultiSelect = (field, value) => {
     setLocalFilters((prev) => {
-      const arr = Array.isArray(prev[field])
-        ? prev[field]
-        : prev[field]
-          ? [prev[field]]
-          : [];
+      // Ensure we always work with arrays
+      let currentArray = [];
+      if (Array.isArray(prev[field])) {
+        currentArray = prev[field];
+      } else if (prev[field] && typeof prev[field] === 'string') {
+        currentArray = prev[field].split(',').map(s => s.trim()).filter(s => s);
+      }
+      
+      const newArray = currentArray.includes(value)
+        ? currentArray.filter((v) => v !== value)
+        : [...currentArray, value];
+      
+      console.log(`[FilterModal] Multi-select ${field}:`, {
+        value,
+        currentArray,
+        newArray,
+        action: currentArray.includes(value) ? 'remove' : 'add'
+      });
+      
       return {
         ...prev,
-        [field]: arr.includes(value)
-          ? arr.filter((v) => v !== value)
-          : [...arr, value],
+        [field]: newArray,
       };
     });
   };
@@ -166,11 +193,39 @@ const ReportsFilterModal = ({
     // Format arrays as comma-separated strings for backend compatibility
     filtersToSend = {
       ...filtersToSend,
-      city: Array.isArray(filtersToSend.city) ? filtersToSend.city.join(',') : filtersToSend.city,
-      policeStation: Array.isArray(filtersToSend.policeStation) ? filtersToSend.policeStation.join(',') : filtersToSend.policeStation,
-      barangay: Array.isArray(filtersToSend.barangay) ? filtersToSend.barangay.join(',') : filtersToSend.barangay,
-      gender: Array.isArray(filtersToSend.gender) ? filtersToSend.gender.join(',') : filtersToSend.gender,
+      // Convert all multi-select arrays to comma-separated strings
+      status: Array.isArray(filtersToSend.status) && filtersToSend.status.length > 0 
+        ? filtersToSend.status.join(',') 
+        : undefined,
+      type: Array.isArray(filtersToSend.type) && filtersToSend.type.length > 0 
+        ? filtersToSend.type.join(',') 
+        : undefined,
+      city: Array.isArray(filtersToSend.city) && filtersToSend.city.length > 0 
+        ? filtersToSend.city.join(',') 
+        : filtersToSend.city,
+      policeStation: Array.isArray(filtersToSend.policeStation) && filtersToSend.policeStation.length > 0 
+        ? filtersToSend.policeStation.join(',') 
+        : undefined,
+      barangay: Array.isArray(filtersToSend.barangay) && filtersToSend.barangay.length > 0 
+        ? filtersToSend.barangay.join(',') 
+        : undefined,
+      gender: Array.isArray(filtersToSend.gender) && filtersToSend.gender.length > 0 
+        ? filtersToSend.gender.join(',') 
+        : undefined,
     };
+    
+    // Remove undefined/empty values to clean up the request
+    Object.keys(filtersToSend).forEach(key => {
+      if (filtersToSend[key] === undefined || filtersToSend[key] === '' || 
+          (Array.isArray(filtersToSend[key]) && filtersToSend[key].length === 0)) {
+        delete filtersToSend[key];
+      }
+    });
+    
+    // Debug: Log the formatted filters
+    console.log('=== FILTER MODAL DEBUG ===');
+    console.log('Original localFilters:', localFilters);
+    console.log('Formatted filtersToSend:', filtersToSend);
     
     onSubmit(filtersToSend);
     onClose();
